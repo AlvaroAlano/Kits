@@ -1,0 +1,103 @@
+---
+// Galeria em mosaico: uma foto grande e quatro menores. No celular, a grande em cima e as outras em 2x2.
+import Foto from '../comum/Foto.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.galeria;
+const fotos = site.fotos.galeria.slice(0, 5);
+---
+
+<section class="galeria secao" id="espaco">
+  <div class="container">
+    <div class="galeria__topo">
+      <div>
+        <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+        <h2 class="titulo titulo--2 galeria__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+      </div>
+      <p class="texto galeria__texto" data-revelar style="--atraso:200ms">{t.texto}</p>
+    </div>
+
+    <div class="galeria__mosaico" data-revelar>
+      {
+        fotos.map((foto, i) => (
+          <Foto
+            class="galeria__item"
+            foto={foto}
+            sizes={i === 0 ? '(min-width: 900px) 48vw, 100vw' : '(min-width: 900px) 24vw, 50vw'}
+          />
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .galeria__topo {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--colunas-gap);
+    align-items: end;
+  }
+
+  .galeria__topo > div {
+    grid-column: 1 / span 7;
+  }
+
+  .galeria__titulo {
+    margin-top: 28px;
+  }
+
+  .galeria__texto {
+    grid-column: 9 / -1;
+  }
+
+  .galeria__mosaico {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, clamp(200px, 21vw, 320px));
+    gap: 12px;
+    margin-top: clamp(48px, 6vw, 80px);
+  }
+
+  .galeria__item:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .galeria__item :global(img) {
+    transition: transform 1.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  @media (hover: hover) {
+    .galeria__item:hover :global(img) {
+      transform: scale(1.045);
+    }
+  }
+
+  @media (max-width: 899px) {
+    .galeria__topo {
+      display: block;
+    }
+
+    .galeria__texto {
+      margin-top: 24px;
+    }
+
+    .galeria__mosaico {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: none;
+      gap: 8px;
+      margin-top: 40px;
+    }
+
+    .galeria__item {
+      aspect-ratio: 1;
+    }
+
+    .galeria__item:first-child {
+      grid-row: auto;
+      aspect-ratio: 4 / 5;
+    }
+  }
+</style>

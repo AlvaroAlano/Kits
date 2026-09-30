@@ -1,0 +1,66 @@
+---
+// Chamada final, escura, com título grande alinhado à esquerda e o botão do WhatsApp.
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.final;
+---
+
+<section class="final escuro" id="agendar">
+  <div class="final__grade container">
+    <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+    <h2 class="titulo final__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+    <div class="final__acao" data-revelar style="--atraso:220ms">
+      <p class="texto">{t.texto}</p>
+      <a class="botao botao--claro" href={site.links.agendar} target="_blank" rel="noopener">
+        <Icone nome="whatsapp" />
+        {t.cta}
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final {
+    padding-block: var(--espaco-secao) clamp(72px, 9vw, 128px);
+  }
+
+  .final__grade {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--colunas-gap);
+    align-items: end;
+  }
+
+  .final__grade .sobrelinha {
+    grid-column: 1 / -1;
+    margin-bottom: 32px;
+  }
+
+  .final__titulo {
+    grid-column: 1 / span 8;
+    font-size: clamp(2.8rem, 6.4vw, 6.5rem);
+    line-height: 0.98;
+  }
+
+  .final__acao {
+    grid-column: 9 / -1;
+    display: grid;
+    gap: 28px;
+  }
+
+  @media (max-width: 899px) {
+    .final__grade {
+      display: block;
+    }
+
+    .final__acao {
+      margin-top: 36px;
+    }
+
+    .final__acao .botao {
+      width: 100%;
+    }
+  }
+</style>

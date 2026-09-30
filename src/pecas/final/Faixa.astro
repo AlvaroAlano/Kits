@@ -1,0 +1,124 @@
+---
+// Chamada final em um painel escuro arredondado, centralizado, com a foto da especialista
+// em miniatura e anéis concêntricos ao fundo.
+import Foto from '../comum/Foto.astro';
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.final;
+---
+
+<section class="faixa" id="agendar">
+  <div class="container">
+    <div class="faixa__painel escuro">
+      <span class="faixa__aneis" aria-hidden="true"><i></i><i></i><i></i></span>
+
+      <div class="faixa__pessoa" data-revelar>
+        <Foto class="faixa__foto" foto={site.fotos.especialista} forma="circulo" sizes="56px" />
+        <p>{t.selo}</p>
+      </div>
+      <h2 class="titulo faixa__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+      <p class="texto faixa__texto" data-revelar style="--atraso:180ms">{t.texto}</p>
+      <a class="botao botao--claro faixa__botao" href={site.links.agendar} target="_blank" rel="noopener" data-revelar style="--atraso:240ms">
+        <Icone nome="whatsapp" />
+        {t.cta}
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .faixa {
+    padding-bottom: clamp(24px, 3vw, 40px);
+  }
+
+  .faixa__painel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(64px, 9vw, 128px) clamp(24px, 5vw, 64px);
+    border-radius: 32px;
+    overflow: hidden;
+    text-align: center;
+    isolation: isolate;
+  }
+
+  .faixa__aneis {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: -1;
+    transform: translate(-50%, -50%);
+  }
+
+  .faixa__aneis i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 1px solid var(--linha-escuro);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .faixa__aneis i:nth-child(1) {
+    width: 460px;
+    height: 460px;
+  }
+
+  .faixa__aneis i:nth-child(2) {
+    width: 760px;
+    height: 760px;
+  }
+
+  .faixa__aneis i:nth-child(3) {
+    width: 1080px;
+    height: 1080px;
+  }
+
+  .faixa__pessoa {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 16px 6px 6px;
+    border: 1px solid var(--linha-escuro);
+    border-radius: 999px;
+    font-size: 14px;
+    color: var(--sobre-escuro-suave);
+  }
+
+  .faixa__foto {
+    width: 36px;
+  }
+
+  .faixa__titulo {
+    max-width: 16ch;
+    margin-top: 32px;
+    font-size: clamp(2.6rem, 6vw, 5.5rem);
+    line-height: 1;
+  }
+
+  .faixa__titulo :global(em) {
+    color: var(--destaque-escuro);
+  }
+
+  .faixa__texto {
+    margin-top: 24px;
+    max-width: 44ch;
+  }
+
+  .faixa__botao {
+    margin-top: 36px;
+  }
+
+  @media (max-width: 899px) {
+    .faixa__painel {
+      border-radius: 28px;
+    }
+
+    .faixa__botao {
+      align-self: stretch;
+    }
+  }
+</style>

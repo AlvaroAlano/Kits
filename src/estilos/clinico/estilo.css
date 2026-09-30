@@ -1,0 +1,93 @@
+/* Estilo Clínico: ajustes sobre a base comum. Tudo escopado para não vazar para outros estilos. */
+
+html[data-estilo='clinico'] {
+  --altura-cab: 72px;
+  --marca-alinhamento: flex-start;
+  --marca-gap: 5px;
+  --marca-sub-fonte: var(--fonte-rotulo);
+  --marca-sub-escala: 0.44;
+  --marca-sub-peso: 400;
+  --marca-sub-espaco: 0.08em;
+  --marca-sub-recuo: 0;
+}
+
+@media (min-width: 1024px) {
+  html[data-estilo='clinico'] {
+    --altura-cab: 88px;
+  }
+}
+
+html[data-estilo='clinico'] body {
+  font-size: 16.5px;
+}
+
+/* Duas seções claras seguidas: o respiro de uma basta (evita buraco duplo) */
+html[data-estilo='clinico'] .secao:not(.escuro) + .secao:not(.escuro) {
+  padding-top: 0;
+}
+
+/* Rótulos em fonte mono com um ponto no lugar da linha */
+html[data-estilo='clinico'] .sobrelinha {
+  gap: 10px;
+  font-family: var(--fonte-rotulo);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+html[data-estilo='clinico'] .sobrelinha::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+html[data-estilo='clinico'] .titulo {
+  letter-spacing: -0.012em;
+  line-height: 1.02;
+}
+
+html[data-estilo='clinico'] .titulo em {
+  color: var(--destaque);
+}
+
+html[data-estilo='clinico'] .escuro .titulo em {
+  color: var(--destaque-escuro);
+}
+
+html[data-estilo='clinico'] .titulo--1 {
+  font-size: clamp(3rem, 7vw, 6.75rem);
+  line-height: 0.98;
+}
+
+html[data-estilo='clinico'] .titulo--2 {
+  font-size: clamp(2.5rem, 4.8vw, 4.6rem);
+}
+
+html[data-estilo='clinico'] .texto {
+  font-size: clamp(16px, 1.1vw, 17.5px);
+  line-height: 1.65;
+}
+
+/* Botões em cápsula, texto normal (sem caixa alta) */
+html[data-estilo='clinico'] .botao {
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html[data-estilo='clinico'] .botao svg {
+  width: 18px;
+  height: 18px;
+}
+
+html[data-estilo='clinico'] .link-seta {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}

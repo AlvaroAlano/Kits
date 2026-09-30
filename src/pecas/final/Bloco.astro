@@ -1,0 +1,111 @@
+---
+// Chamada final em um bloco de cor viva, com o convite em letras enormes.
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.final;
+---
+
+<section class="fb escuro" id="agendar">
+  <span class="fb__brilho fb__brilho--1" aria-hidden="true"><Icone nome="brilho" /></span>
+  <span class="fb__brilho fb__brilho--2" aria-hidden="true"><Icone nome="brilho" /></span>
+
+  <div class="container">
+    <p class="fb__sobre" data-revelar>{t.sobrelinha}</p>
+    <h2 class="titulo fb__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+    <div class="fb__rodape" data-revelar style="--atraso:200ms">
+      <p class="texto">{t.texto}</p>
+      <a class="botao botao--claro" href={site.links.agendar} target="_blank" rel="noopener">
+        <Icone nome="whatsapp" />
+        {t.cta}
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .fb {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(80px, 10vw, 144px) clamp(64px, 8vw, 112px);
+  }
+
+  .fb__sobre {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .fb__titulo {
+    margin-top: 12px;
+    font-size: clamp(4.2rem, 17vw, 16rem);
+    font-weight: 800;
+    line-height: 0.84;
+    letter-spacing: -0.055em;
+    text-transform: uppercase;
+  }
+
+  .fb__rodape {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px 48px;
+    margin-top: clamp(32px, 4vw, 56px);
+  }
+
+  .fb__rodape .texto {
+    max-width: 36ch;
+  }
+
+  .fb__brilho {
+    position: absolute;
+    color: var(--destaque-escuro);
+    pointer-events: none;
+  }
+
+  .fb__brilho :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .fb__brilho--1 {
+    top: 12%;
+    right: 8%;
+    width: clamp(48px, 7vw, 110px);
+  }
+
+  .fb__brilho--2 {
+    top: 46%;
+    right: 26%;
+    width: clamp(24px, 3vw, 44px);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .fb__brilho {
+      animation: fb-girar 14s linear infinite;
+    }
+
+    .fb__brilho--2 {
+      animation-duration: 9s;
+      animation-direction: reverse;
+    }
+  }
+
+  @keyframes fb-girar {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (max-width: 899px) {
+    .fb__rodape {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .fb__brilho--2 {
+      display: none;
+    }
+  }
+</style>

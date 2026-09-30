@@ -1,0 +1,141 @@
+---
+// Bolha de WhatsApp no canto (todas as telas). Depois de alguns segundos mostra um balão de
+// conversa uma única vez por visita; some na chamada final e no rodapé.
+import Icone from './Icone.astro';
+
+const { site } = Astro.props;
+const t = site.textos.bolha;
+const { profissional } = site.cliente;
+---
+
+<div class="bw" data-bolha>
+  <div class="bw__balao" data-balao hidden>
+    <button type="button" class="bw__fechar" aria-label={t.fechar} data-fechar-balao>×</button>
+    <p><strong>{profissional.nome.split(' ')[0]}</strong> {t.mensagem}</p>
+  </div>
+  <a class="bw__botao" href={site.links.agendar} target="_blank" rel="noopener" aria-label={t.rotulo}>
+    <Icone nome="whatsapp" />
+  </a>
+</div>
+
+<script>
+  const bolha = document.querySelector('[data-bolha]');
+  const balao = bolha.querySelector('[data-balao]');
+  const topo = document.getElementById('topo');
+  const finais = [document.getElementById('agendar'), document.querySelector('body > footer')].filter(Boolean);
+  const finaisVisiveis = new Set();
+  let passouTopo = false;
+
+  const atualizar = () => bolha.classList.toggle('bw--visivel', passouTopo && finaisVisiveis.size === 0);
+
+  if (topo) {
+    new IntersectionObserver(([e]) => {
+      passouTopo = !e.isIntersecting;
+      atualizar();
+    }).observe(topo);
+  }
+  const observador = new IntersectionObserver((entradas) => {
+    for (const e of entradas) e.isIntersecting ? finaisVisiveis.add(e.target) : finaisVisiveis.delete(e.target);
+    atualizar();
+  });
+  finais.forEach((el) => observador.observe(el));
+
+  // balão: uma vez por visita (sessionStorage pode estar bloqueado, por isso o try)
+  let jaViu = false;
+  try {
+    jaViu = sessionStorage.getItem('balao-visto') === '1';
+  } catch {}
+  const fecharBalao = () => {
+    balao.hidden = true;
+    try {
+      sessionStorage.setItem('balao-visto', '1');
+    } catch {}
+  };
+  if (!jaViu) {
+    setTimeout(() => {
+      if (bolha.classList.contains('bw--visivel')) balao.hidden = false;
+    }, 7000);
+  }
+  bolha.querySelector('[data-fechar-balao]').addEventListener('click', fecharBalao);
+  bolha.querySelector('.bw__botao').addEventListener('click', fecharBalao);
+</script>
+
+<style>
+  .bw {
+    position: fixed;
+    right: clamp(14px, 2vw, 28px);
+    bottom: calc(clamp(14px, 2vw, 28px) + env(safe-area-inset-bottom));
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    opacity: 0;
+    transform: translateY(16px);
+    pointer-events: none;
+    transition:
+      opacity 0.4s,
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .bw--visivel {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .bw__balao {
+    position: relative;
+    max-width: min(250px, 70vw);
+    padding: 14px 34px 14px 16px;
+    border-radius: 18px 18px 4px 18px;
+    background: var(--fundo);
+    font-size: 14.5px;
+    line-height: 1.45;
+    box-shadow: 0 14px 34px -14px rgb(60 30 10 / 0.4);
+    animation: bw-entrar 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .bw__balao[hidden] {
+    display: none;
+  }
+
+  @keyframes bw-entrar {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.96);
+    }
+  }
+
+  .bw__fechar {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--tinta-suave);
+  }
+
+  .bw__botao {
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--escuro);
+    color: var(--sobre-escuro);
+    box-shadow: 0 12px 28px -10px rgb(60 30 10 / 0.5);
+    transition: transform 0.3s;
+  }
+
+  .bw__botao:hover {
+    transform: scale(1.06);
+  }
+
+  .bw__botao :global(svg) {
+    width: 26px;
+    height: 26px;
+  }
+</style>

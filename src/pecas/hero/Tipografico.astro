@@ -1,0 +1,188 @@
+---
+// Topo tipográfico: título gigante com fotos em cápsula encaixadas entre as palavras
+// (no texto da ficha, [1] e [2] marcam onde entra cada foto) e uma faixa com os
+// tratamentos rolando embaixo.
+import Icone from '../comum/Icone.astro';
+import { fmt, comBase } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.hero;
+const fotos = site.fotos.heroInline ?? [];
+const partes = t.titulo.split(/\[(\d)\]/);
+const urlFoto = (src, largura) =>
+  src.includes('images.unsplash.com') ? `${src}?auto=format&fit=crop&q=75&w=${largura}` : comBase(src);
+const tratamentos = site.servicos.flatMap((g) => g.itens.map((i) => i.nome));
+---
+
+<section class="ht" id="topo">
+  <div class="container">
+    <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+    <h1 class="titulo ht__titulo" data-revelar style="--atraso:100ms">
+      {
+        partes.map((parte, i) => {
+          if (i % 2 === 0) return <Fragment set:html={fmt(parte)} />;
+          const foto = fotos[Number(parte) - 1];
+          if (!foto) return null;
+          return (
+            <span class="ht__foto" style={`--i:${Number(parte)}`} aria-hidden="true">
+              <img
+                src={urlFoto(foto.src, 480)}
+                srcset={`${urlFoto(foto.src, 320)} 320w, ${urlFoto(foto.src, 480)} 480w, ${urlFoto(foto.src, 720)} 720w`}
+                sizes="(min-width: 900px) 240px, 30vw"
+                alt=""
+                style={foto.foco ? `object-position:${foto.foco}` : undefined}
+                fetchpriority="high"
+              />
+            </span>
+          );
+        })
+      }
+    </h1>
+
+    <div class="ht__rodape" data-revelar style="--atraso:220ms">
+      <p class="texto">{t.texto}</p>
+      <div class="ht__acoes">
+        <a class="botao" href={site.links.agendar} target="_blank" rel="noopener">
+          <Icone nome="whatsapp" />
+          {t.cta}
+        </a>
+        <a class="link-seta" href="#tratamentos">{t.ctaSecundario} <Icone nome="seta" /></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ht__faixa escuro" aria-hidden="true">
+    <div class="ht__trilho">
+      {
+        [...tratamentos, ...tratamentos].map((nome) => (
+          <span class="ht__item">
+            {nome}
+            <Icone nome="brilho" />
+          </span>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .ht {
+    padding-top: calc(var(--altura-cab) + clamp(40px, 7vw, 96px));
+  }
+
+  .ht__titulo {
+    margin-top: 28px;
+    font-size: clamp(3.3rem, 10.5vw, 10.5rem);
+    line-height: 0.92;
+  }
+
+  .ht__foto {
+    display: inline-block;
+    width: 1.6em;
+    height: 0.78em;
+    margin-inline: 0.06em;
+    border-radius: 999px;
+    overflow: hidden;
+    vertical-align: 0.02em;
+    background: var(--fundo-alt);
+  }
+
+  .ht__foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: var(--filtro-foto, none);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ht__foto {
+      animation: ht-abrir 1.1s cubic-bezier(0.7, 0, 0.2, 1) both;
+      animation-delay: calc(0.35s + var(--i) * 0.15s);
+    }
+  }
+
+  @keyframes ht-abrir {
+    from {
+      width: 0;
+      margin-inline: 0;
+    }
+  }
+
+  .ht__rodape {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 28px 48px;
+    margin-top: clamp(36px, 5vw, 64px);
+  }
+
+  .ht__rodape .texto {
+    max-width: 40ch;
+  }
+
+  .ht__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 28px;
+  }
+
+  /* Faixa de tratamentos rolando */
+  .ht__faixa {
+    margin-top: clamp(56px, 7vw, 96px);
+    padding-block: 18px;
+    overflow: hidden;
+    transform: rotate(-1.5deg) scale(1.02);
+  }
+
+  .ht__trilho {
+    display: flex;
+    width: max-content;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ht__trilho {
+      animation: ht-rolar 38s linear infinite;
+    }
+  }
+
+  @keyframes ht-rolar {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .ht__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 28px;
+    padding-right: 28px;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(1.3rem, 2.2vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  .ht__item :global(svg) {
+    width: 0.9em;
+    height: 0.9em;
+    color: var(--destaque-escuro);
+  }
+
+  @media (max-width: 899px) {
+    .ht__titulo {
+      font-size: clamp(3rem, 14.5vw, 5rem);
+    }
+
+    .ht__rodape {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .ht__acoes .botao {
+      flex: 1 1 100%;
+    }
+  }
+</style>

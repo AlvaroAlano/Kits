@@ -1,0 +1,296 @@
+---
+// Tratamentos em índice: lista por categoria à direita e, à esquerda, um arco fixo cuja foto
+// troca conforme a categoria que está na tela (ou sob o mouse). No celular, cada categoria
+// ganha uma miniatura em arco ao lado do nome.
+import Foto from '../comum/Foto.astro';
+import Icone from '../comum/Icone.astro';
+import { fmt, preco } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.servicos;
+const capas = site.fotos.categorias ?? [];
+---
+
+<section class="ix secao" id="tratamentos" data-indice>
+  <div class="container">
+    <div class="ix__topo">
+      <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+      <h2 class="titulo titulo--2 ix__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+      <p class="texto ix__texto" data-revelar style="--atraso:180ms">{t.texto}</p>
+    </div>
+
+    <div class="ix__grade">
+      <div class="ix__lateral" aria-hidden="true">
+        <div class="ix__arco">
+          {
+            capas.slice(0, site.servicos.length).map((foto, i) => (
+              <Foto class:list={['ix__capa', i === 0 && 'ix__capa--ativa']} foto={foto} forma="arco" sizes="(min-width: 900px) 30vw, 1px" />
+            ))
+          }
+        </div>
+        <p class="ix__legenda" data-legenda>{site.servicos[0]?.categoria}</p>
+      </div>
+
+      <div class="ix__lista">
+        {
+          site.servicos.map((grupo, gi) => (
+            <div class="ix__grupo" data-grupo={gi} data-nome={grupo.categoria}>
+              <h3 class="ix__categoria">
+                {capas[gi] && <Foto class="ix__mini" foto={{ ...capas[gi], alt: '' }} forma="arco" sizes="64px" />}
+                <span>{grupo.categoria}</span>
+                <small>{grupo.itens.length} {t.opcoes}</small>
+              </h3>
+              <ul>
+                {grupo.itens.map((item) => {
+                  const p = preco(item);
+                  return (
+                    <li>
+                      <a class="ix__item" href={site.links.servico(item.nome)} target="_blank" rel="noopener">
+                        <span class="ix__nome">{item.nome}</span>
+                        <span class="ix__preco">
+                          {p.aPartirDe && <small>{t.aPartirDe}</small>}
+                          {p.valor}
+                        </span>
+                        <span class="ix__desc">{item.descricao}</span>
+                        <span class="ix__meta">
+                          {item.duracao && <span>{item.duracao}</span>}
+                          <span class="ix__agendar">
+                            {t.agendar} <Icone nome="seta" />
+                          </span>
+                        </span>
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('[data-indice]').forEach((raiz) => {
+    const capas = [...raiz.querySelectorAll('.ix__capa')];
+    const legenda = raiz.querySelector('[data-legenda]');
+    const grupos = [...raiz.querySelectorAll('[data-grupo]')];
+    let ativo = 0;
+
+    const ativar = (i) => {
+      if (i === ativo || !capas[i]) return;
+      capas[ativo]?.classList.remove('ix__capa--ativa');
+      capas[i].classList.add('ix__capa--ativa');
+      legenda.textContent = grupos[i].dataset.nome;
+      ativo = i;
+    };
+
+    // o grupo que cruza o meio da tela é o ativo
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        for (const e of entradas) if (e.isIntersecting) ativar(Number(e.target.dataset.grupo));
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    grupos.forEach((g) => {
+      observador.observe(g);
+      g.addEventListener('mouseenter', () => ativar(Number(g.dataset.grupo)));
+    });
+  });
+</script>
+
+<style>
+  .ix__topo {
+    max-width: 640px;
+  }
+
+  .ix__titulo {
+    margin-top: 18px;
+  }
+
+  .ix__texto {
+    margin-top: 20px;
+  }
+
+  .ix__grade {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--colunas-gap);
+    margin-top: clamp(48px, 6vw, 80px);
+  }
+
+  .ix__lateral {
+    grid-column: 1 / span 4;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--altura-cab) + 32px);
+  }
+
+  .ix__arco {
+    position: relative;
+    aspect-ratio: 3 / 4;
+  }
+
+  .ix__capa {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.7s ease;
+  }
+
+  .ix__capa--ativa {
+    opacity: 1;
+  }
+
+  .ix__legenda {
+    margin-top: 14px;
+    font-family: var(--fonte-assinatura);
+    font-size: 1.7rem;
+    line-height: 1;
+    color: var(--destaque);
+    text-align: center;
+  }
+
+  .ix__lista {
+    grid-column: 6 / -1;
+  }
+
+  .ix__grupo + .ix__grupo {
+    margin-top: clamp(48px, 5vw, 72px);
+  }
+
+  .ix__categoria {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid var(--tinta);
+    font-family: var(--fonte-titulo);
+    font-size: clamp(1.7rem, 2.4vw, 2.2rem);
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  .ix__categoria small {
+    margin-left: auto;
+    font-family: var(--fonte-texto);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--tinta-suave);
+  }
+
+  .ix__mini {
+    display: none;
+  }
+
+  .ix__item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 24px;
+    row-gap: 6px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--linha);
+  }
+
+  .ix__nome {
+    font-family: var(--fonte-titulo);
+    font-size: 1.3rem;
+    line-height: 1.25;
+    transition: color 0.3s;
+  }
+
+  .ix__preco {
+    justify-self: end;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .ix__preco small {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--tinta-suave);
+  }
+
+  .ix__desc {
+    max-width: 54ch;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--tinta-suave);
+  }
+
+  .ix__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    font-size: 13.5px;
+    color: var(--tinta-suave);
+  }
+
+  .ix__agendar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--destaque);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 0.3s,
+      transform 0.3s;
+  }
+
+  .ix__agendar :global(svg) {
+    width: 15px;
+    height: 15px;
+  }
+
+  @media (hover: hover) {
+    .ix__item:hover .ix__nome {
+      color: var(--destaque);
+    }
+
+    .ix__item:hover .ix__agendar {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .ix__grade {
+      display: block;
+    }
+
+    .ix__lateral {
+      display: none;
+    }
+
+    .ix__categoria {
+      align-items: center;
+    }
+
+    .ix__mini {
+      display: block;
+      flex: none;
+      width: 46px;
+      aspect-ratio: 3 / 4;
+    }
+
+    .ix__meta {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ix__agendar {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

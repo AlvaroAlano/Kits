@@ -1,0 +1,105 @@
+---
+// Dúvidas frequentes em duas colunas, com as respostas sempre visíveis.
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.faq;
+---
+
+<section class="faq secao" id="duvidas">
+  <div class="container faq__grade">
+    <div class="faq__topo">
+      <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+      <h2 class="titulo titulo--2 faq__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+      <p class="texto faq__texto" data-revelar style="--atraso:200ms">{t.texto}</p>
+      <a class="link-seta" href={site.links.agendar} target="_blank" rel="noopener" data-revelar style="--atraso:260ms">
+        {t.cta} <Icone nome="seta" />
+      </a>
+    </div>
+
+    <dl class="faq__lista">
+      {
+        t.itens.map((item, i) => (
+          <div data-revelar style={`--atraso:${(i % 2) * 90}ms`}>
+            <dt>{item.pergunta}</dt>
+            <dd>{item.resposta}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  .faq__grade {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--colunas-gap);
+  }
+
+  .faq__topo {
+    grid-column: 1 / span 4;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--altura-cab) + 48px);
+  }
+
+  .faq__titulo {
+    margin-top: 24px;
+  }
+
+  .faq__texto {
+    margin-top: 20px;
+  }
+
+  .faq__topo .link-seta {
+    margin-top: 28px;
+  }
+
+  .faq__lista {
+    grid-column: 6 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 var(--colunas-gap);
+    margin: 0;
+  }
+
+  .faq__lista div {
+    padding-block: 26px 30px;
+    border-top: 1px solid var(--linha-forte);
+  }
+
+  .faq__lista dt {
+    font-size: 17.5px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .faq__lista dd {
+    margin: 10px 0 0;
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--tinta-suave);
+  }
+
+  @media (max-width: 1023px) {
+    .faq__grade {
+      display: block;
+    }
+
+    .faq__topo {
+      position: static;
+    }
+
+    .faq__lista {
+      margin-top: 48px;
+    }
+  }
+
+  @media (max-width: 699px) {
+    .faq__lista {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

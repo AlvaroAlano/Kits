@@ -1,0 +1,67 @@
+---
+// Uma frase grande e centralizada que resume a filosofia da clínica.
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.manifesto;
+---
+
+<section class="mf secao">
+  <div class="container mf__caixa">
+    <span class="mf__icone" data-revelar><Icone nome="folha" /></span>
+    <p class="mf__frase" data-revelar style="--atraso:100ms" set:html={fmt(t.texto)} />
+    {t.assinatura && <p class="mf__assinatura" data-revelar style="--atraso:200ms">{t.assinatura}</p>}
+  </div>
+</section>
+
+<style>
+  .mf__caixa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .mf__icone {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--fundo-alt);
+    color: var(--destaque);
+  }
+
+  .mf__icone :global(svg) {
+    width: 24px;
+    height: 24px;
+  }
+
+  .mf__frase {
+    max-width: 24ch;
+    margin-top: 32px;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(1.75rem, 3.6vw, 3.25rem);
+    font-weight: 330;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .mf__frase :global(em) {
+    color: var(--destaque);
+  }
+
+  .mf__assinatura {
+    margin-top: 28px;
+    font-family: var(--fonte-titulo);
+    font-size: 1.15rem;
+    font-style: italic;
+    color: var(--tinta-suave);
+  }
+
+  .mf__assinatura::before {
+    content: '— ';
+  }
+</style>

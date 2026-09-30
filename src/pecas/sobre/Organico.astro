@@ -1,0 +1,195 @@
+---
+// Sobre a especialista em tom de conversa: retrato em recorte orgânico, selo circular girando
+// devagar e três princípios com ícones.
+import Foto from '../comum/Foto.astro';
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.sobre;
+const RAIO = 54;
+const circunferencia = (2 * Math.PI * RAIO).toFixed(1);
+---
+
+<section class="so secao" id="sobre">
+  <div class="container so__grade">
+    <div class="so__figura">
+      <Foto class="so__foto" foto={site.fotos.especialista} forma="organica" sizes="(min-width: 900px) 44vw, 88vw" />
+      <div class="so__selo" aria-hidden="true">
+        <svg viewBox="0 0 140 140">
+          <defs>
+            <path id="so-circulo" d={`M 70,70 m -${RAIO},0 a ${RAIO},${RAIO} 0 1,1 ${RAIO * 2},0 a ${RAIO},${RAIO} 0 1,1 -${RAIO * 2},0`} />
+          </defs>
+          <text textLength={circunferencia} lengthAdjust="spacing">
+            <textPath href="#so-circulo">{t.selo}</textPath>
+          </text>
+        </svg>
+        <span class="so__selo-icone"><Icone nome="folha" /></span>
+      </div>
+    </div>
+
+    <div class="so__texto">
+      <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+      <h2 class="titulo titulo--2 so__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+      <div class="so__paragrafos">
+        {t.paragrafos.map((p, i) => <p class="texto" data-revelar style={`--atraso:${150 + i * 80}ms`}>{p}</p>)}
+      </div>
+      <ul class="so__principios">
+        {
+          t.principios.map((pr, i) => (
+            <li data-revelar style={`--atraso:${i * 100}ms`}>
+              <span class="so__icone"><Icone nome={pr.icone} /></span>
+              <div>
+                <h3>{pr.titulo}</h3>
+                <p>{pr.texto}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .so__grade {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--colunas-gap);
+    align-items: center;
+  }
+
+  .so__figura {
+    grid-column: 1 / span 6;
+    position: relative;
+  }
+
+  .so__foto {
+    aspect-ratio: 4 / 5;
+    width: 92%;
+  }
+
+  .so__selo {
+    position: absolute;
+    right: 0;
+    bottom: 6%;
+    display: grid;
+    place-items: center;
+    width: clamp(112px, 12vw, 150px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--fundo);
+    color: var(--tinta);
+  }
+
+  .so__selo > svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    font-family: var(--fonte-texto);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    fill: currentColor;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .so__selo > svg {
+      animation: so-girar 36s linear infinite;
+    }
+  }
+
+  @keyframes so-girar {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .so__selo-icone {
+    display: grid;
+    place-items: center;
+    width: 44%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--fundo-alt);
+    color: var(--destaque);
+  }
+
+  .so__selo-icone :global(svg) {
+    width: 45%;
+    height: 45%;
+  }
+
+  .so__texto {
+    grid-column: 8 / -1;
+  }
+
+  .so__titulo {
+    margin-top: 16px;
+  }
+
+  .so__paragrafos {
+    display: grid;
+    gap: 16px;
+    margin-top: 28px;
+  }
+
+  .so__principios {
+    display: grid;
+    gap: 22px;
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 1px solid var(--linha);
+  }
+
+  .so__principios li {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .so__icone {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: var(--fundo-alt);
+    color: var(--destaque);
+  }
+
+  .so__icone :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+
+  .so__principios h3 {
+    font-size: 16.5px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .so__principios p {
+    margin-top: 4px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--tinta-suave);
+  }
+
+  @media (max-width: 899px) {
+    .so__grade {
+      display: block;
+    }
+
+    .so__foto {
+      width: 88%;
+    }
+
+    .so__texto {
+      margin-top: 48px;
+    }
+  }
+</style>

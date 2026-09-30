@@ -1,0 +1,223 @@
+---
+// Sobre a especialista: uma citação grande dela, assinatura manuscrita, retrato com moldura e números.
+import Foto from '../comum/Foto.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.sobre;
+const { profissional } = site.cliente;
+---
+
+<section class="sobre secao" id="especialista">
+  <div class="sobre__grade container">
+    <div class="sobre__texto">
+      <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+      <blockquote class="sobre__citacao" data-revelar style="--atraso:100ms">
+        <span class="sobre__aspas" aria-hidden="true">“</span>
+        <p set:html={fmt(t.citacao)} />
+      </blockquote>
+      <p class="sobre__assinatura" data-revelar style="--atraso:200ms" aria-hidden="true">{profissional.nome}</p>
+      <div class="sobre__paragrafos">
+        {t.paragrafos.map((p, i) => <p class="texto" data-revelar style={`--atraso:${i * 100}ms`}>{p}</p>)}
+      </div>
+      <p class="sobre__credenciais" data-revelar>
+        <strong>{profissional.nome}</strong>
+        <span>{profissional.titulo}</span>
+        <span>{profissional.registro}</span>
+      </p>
+    </div>
+
+    <Foto
+      class="sobre__foto"
+      foto={site.fotos.especialista}
+      moldura="esquerda"
+      sizes="(min-width: 900px) 32vw, 82vw"
+    />
+  </div>
+
+  <div class="container">
+    <ul class="sobre__numeros">
+      {
+        t.numeros.map((n, i) => (
+          <li data-revelar style={`--atraso:${i * 120}ms`}>
+            <span class="sobre__numero">{n.valor}</span>
+            <span class="sobre__rotulo">{n.rotulo}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .sobre {
+    background: var(--fundo-alt);
+  }
+
+  .sobre__grade {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--colunas-gap);
+    align-items: start;
+  }
+
+  .sobre__texto {
+    grid-column: 1 / span 7;
+  }
+
+  .sobre__foto {
+    --moldura-x: 20px;
+    --moldura-y: 20px;
+    grid-column: 9 / -1;
+    aspect-ratio: 4 / 5;
+    margin-top: clamp(48px, 7vw, 112px);
+  }
+
+  .sobre__citacao {
+    margin-top: 36px;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(1.85rem, 3.1vw, 3.1rem);
+    line-height: 1.17;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .sobre__citacao :global(em) {
+    font-style: italic;
+  }
+
+  .sobre__aspas {
+    display: block;
+    height: 0.62em;
+    font-size: 2.6em;
+    line-height: 1;
+    color: var(--destaque);
+  }
+
+  .sobre__assinatura {
+    margin-top: 26px;
+    font-family: var(--fonte-assinatura);
+    font-size: clamp(2.6rem, 4vw, 3.75rem);
+    line-height: 1.1;
+    color: var(--destaque);
+    transform: rotate(-3deg);
+    transform-origin: left center;
+  }
+
+  .sobre__paragrafos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 44px;
+  }
+
+  .sobre__paragrafos .texto {
+    font-size: 15.5px;
+  }
+
+  .sobre__credenciais {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--linha);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+  }
+
+  .sobre__credenciais strong {
+    font-weight: 600;
+    color: var(--tinta);
+  }
+
+  .sobre__numeros {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: clamp(72px, 9vw, 128px);
+    border-top: 1px solid var(--linha-forte);
+  }
+
+  .sobre__numeros li {
+    display: grid;
+    gap: 10px;
+    padding: 28px 24px 0 0;
+  }
+
+  .sobre__numeros li + li {
+    padding-left: clamp(20px, 3vw, 40px);
+    border-left: 1px solid var(--linha);
+  }
+
+  .sobre__numero {
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2.6rem, 4.6vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .sobre__rotulo {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+  }
+
+  @media (max-width: 1099px) {
+    .sobre__paragrafos {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .sobre__grade {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* No celular o retrato entra entre a assinatura e os parágrafos */
+    .sobre__texto {
+      display: contents;
+    }
+
+    .sobre__foto {
+      order: 4;
+      align-self: flex-end;
+      width: 82%;
+      margin: 44px 0 16px;
+    }
+
+    .sobre__paragrafos {
+      order: 5;
+      margin-top: 40px;
+    }
+
+    .sobre__credenciais {
+      order: 6;
+      flex-direction: column;
+    }
+
+    .sobre__numeros {
+      grid-template-columns: 1fr;
+      border-top: 0;
+    }
+
+    .sobre__numeros li,
+    .sobre__numeros li + li {
+      grid-template-columns: 7.5rem 1fr;
+      align-items: baseline;
+      padding: 18px 0;
+      border-left: 0;
+      border-top: 1px solid var(--linha);
+    }
+
+    .sobre__numero {
+      font-size: 2.6rem;
+    }
+  }
+</style>

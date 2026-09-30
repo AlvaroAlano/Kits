@@ -1,0 +1,139 @@
+/* Estilo Essencial: ajustes sobre a base comum. Tudo escopado para não vazar para outros estilos. */
+
+html[data-estilo='essencial'] {
+  --altura-cab: 64px;
+  --marca-alinhamento: flex-start;
+  --marca-gap: 4px;
+  --marca-sub-escala: 0.42;
+  --marca-sub-peso: 600;
+  --marca-sub-espaco: 0.16em;
+  --marca-sub-recuo: 0;
+}
+
+@media (min-width: 900px) {
+  html[data-estilo='essencial'] {
+    --altura-cab: 76px;
+  }
+}
+
+html[data-estilo='essencial'] body {
+  font-size: 16.5px;
+}
+
+/* galeria e Instagram têm o mesmo fundo: o respiro de uma basta */
+html[data-estilo='essencial'] #espaco + .secao {
+  padding-top: 0;
+}
+
+/* Logo escrita em sans, com destaque em cor em vez de itálico */
+html[data-estilo='essencial'] .marca__nome {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+html[data-estilo='essencial'] .marca__nome em {
+  font-style: normal;
+  color: var(--destaque);
+}
+
+/* Títulos grossos e apertados; a palavra de destaque ganha cor, não itálico */
+html[data-estilo='essencial'] .titulo {
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+html[data-estilo='essencial'] .titulo em {
+  font-style: normal;
+  color: var(--destaque);
+}
+
+html[data-estilo='essencial'] .escuro .titulo em {
+  color: var(--destaque-escuro);
+}
+
+html[data-estilo='essencial'] .titulo--2 {
+  font-size: clamp(2.5rem, 5.4vw, 5rem);
+}
+
+/* Sobrelinha em etiqueta (pílula) com um ponto de cor */
+html[data-estilo='essencial'] .sobrelinha {
+  gap: 8px;
+  padding: 7px 14px 7px 12px;
+  border: 1.5px solid var(--linha-forte);
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--tinta);
+}
+
+html[data-estilo='essencial'] .sobrelinha::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--escuro);
+}
+
+html[data-estilo='essencial'] .texto {
+  font-size: clamp(16.5px, 1.15vw, 18px);
+  line-height: 1.6;
+}
+
+html[data-estilo='essencial'] .escuro .texto {
+  color: color-mix(in srgb, var(--sobre-escuro) 92%, transparent);
+}
+
+/* Botões em pílula, texto normal */
+html[data-estilo='essencial'] .botao {
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html[data-estilo='essencial'] .botao:hover {
+  background: var(--escuro);
+  border-color: var(--escuro);
+  color: var(--sobre-escuro);
+}
+
+html[data-estilo='essencial'] .botao svg {
+  width: 19px;
+  height: 19px;
+}
+
+html[data-estilo='essencial'] .botao--claro {
+  background: var(--sobre-escuro);
+  border-color: var(--sobre-escuro);
+  color: var(--tinta);
+}
+
+html[data-estilo='essencial'] .botao--claro:hover {
+  background: var(--tinta);
+  border-color: var(--tinta);
+  color: var(--sobre-escuro);
+}
+
+html[data-estilo='essencial'] .botao--contorno {
+  border-width: 1.5px;
+}
+
+html[data-estilo='essencial'] .botao--contorno:hover {
+  background: var(--tinta);
+  border-color: var(--tinta);
+  color: var(--fundo);
+}
+
+html[data-estilo='essencial'] .link-seta {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  border-bottom-width: 2px;
+}

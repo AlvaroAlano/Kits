@@ -1,0 +1,131 @@
+---
+// Localização em uma faixa direta: título, endereço com botões de rota, horários e contato lado a lado.
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.local;
+const { endereco, contato, horarios = [] } = site.cliente;
+---
+
+<section class="lf" id="contato">
+  <div class="container lf__grade">
+    <h2 class="titulo lf__titulo" data-revelar set:html={fmt(t.titulo)} />
+
+    <div class="lf__bloco" data-revelar style="--atraso:80ms">
+      <h3>{t.endereco}</h3>
+      <p>
+        {endereco.linha1}<br />
+        {endereco.bairro} · {endereco.cidade}/{endereco.uf}<br />
+        CEP {endereco.cep}
+      </p>
+      <div class="lf__acoes">
+        <a class="lf__pilula" href={site.links.maps} target="_blank" rel="noopener"><Icone nome="mapa" /> {t.maps}</a>
+        <a class="lf__pilula" href={site.links.waze} target="_blank" rel="noopener"><Icone nome="navegar" /> {t.waze}</a>
+      </div>
+    </div>
+
+    <div class="lf__bloco" data-revelar style="--atraso:160ms">
+      <h3>{t.horarios}</h3>
+      <p>{horarios.map((h, i) => <Fragment>{i > 0 && <br />}{h}</Fragment>)}</p>
+    </div>
+
+    <div class="lf__bloco" data-revelar style="--atraso:240ms">
+      <h3>{t.contato}</h3>
+      <p>
+        <a href={site.links.whats} target="_blank" rel="noopener">{contato.whatsappExibicao}</a>
+        {
+          site.links.instagram && (
+            <Fragment>
+              <br />
+              <a href={site.links.instagram} target="_blank" rel="noopener">@{contato.instagram}</a>
+            </Fragment>
+          )
+        }
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .lf {
+    padding-block: clamp(64px, 8vw, 112px);
+    border-top: 1px solid var(--linha);
+  }
+
+  .lf__grade {
+    display: grid;
+    grid-template-columns: 1.3fr 1.2fr 1fr 1fr;
+    gap: 40px var(--colunas-gap);
+    align-items: start;
+  }
+
+  .lf__titulo {
+    font-size: clamp(2.2rem, 3.6vw, 3.4rem);
+  }
+
+  .lf__bloco h3 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+  }
+
+  .lf__bloco p {
+    margin-top: 10px;
+    font-size: 16.5px;
+    line-height: 1.65;
+  }
+
+  .lf__bloco p a {
+    border-bottom: 1.5px solid var(--linha-forte);
+  }
+
+  .lf__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .lf__pilula {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 16px;
+    border-radius: 999px;
+    background: var(--fundo-alt);
+    font-size: 14.5px;
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .lf__pilula:hover {
+    background: var(--tinta);
+    color: var(--fundo);
+  }
+
+  .lf__pilula :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+
+  @media (max-width: 1023px) {
+    .lf__grade {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .lf__titulo {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 599px) {
+    .lf__grade {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+</style>

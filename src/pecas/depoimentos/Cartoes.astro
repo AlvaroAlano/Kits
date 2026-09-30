@@ -1,0 +1,156 @@
+---
+// Depoimentos em cartões com topo em arco. No celular, deslizam para o lado.
+// Só aparece se a ficha tiver "depoimentos" (use sempre depoimentos reais, com autorização).
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.depoimentos;
+const lista = site.cliente.depoimentos ?? [];
+const iniciais = (nome) =>
+  nome
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join('');
+---
+
+{
+  lista.length > 0 && (
+    <section class="dp secao" id="depoimentos">
+      <div class="container">
+        <div class="dp__topo">
+          <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+          <h2 class="titulo titulo--2 dp__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+        </div>
+      </div>
+
+      <ul class="dp__lista">
+        {lista.map((d, i) => (
+          <li data-revelar style={`--atraso:${(i % 3) * 100}ms`}>
+            <figure class="dp__cartao">
+              <span class="dp__aspas" aria-hidden="true">“</span>
+              <blockquote>{d.texto}</blockquote>
+              <figcaption>
+                <span class="dp__avatar" aria-hidden="true">{iniciais(d.nome)}</span>
+                <span>
+                  <strong>{d.nome}</strong>
+                  {d.detalhe && <small>{d.detalhe}</small>}
+                </span>
+              </figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .dp {
+    background: var(--fundo-alt);
+  }
+
+  .dp__topo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .dp__titulo {
+    margin-top: 18px;
+  }
+
+  .dp__lista {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--colunas-gap);
+    max-width: var(--largura);
+    margin: clamp(48px, 6vw, 80px) auto 0;
+    padding-inline: var(--margem);
+  }
+
+  .dp__cartao {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 56px clamp(24px, 2.6vw, 36px) 30px;
+    border-radius: 999px 999px 18px 18px / 220px 220px 18px 18px;
+    background: var(--fundo);
+    text-align: center;
+  }
+
+  .dp__aspas {
+    font-family: var(--fonte-titulo);
+    font-size: 4.5rem;
+    line-height: 0.6;
+    height: 0.45em;
+    color: var(--destaque);
+  }
+
+  .dp__cartao blockquote {
+    margin-top: 22px;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(1.1rem, 1.35vw, 1.25rem);
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .dp__cartao figcaption {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 28px;
+    text-align: left;
+  }
+
+  .dp__avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--fundo-alt);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--destaque);
+  }
+
+  .dp__cartao strong {
+    display: block;
+    font-size: 15.5px;
+  }
+
+  .dp__cartao small {
+    display: block;
+    font-size: 13.5px;
+    color: var(--tinta-suave);
+  }
+
+  @media (max-width: 899px) {
+    .dp__lista {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+      padding-inline: var(--margem);
+      scroll-padding-inline: var(--margem);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .dp__lista::-webkit-scrollbar {
+      display: none;
+    }
+
+    .dp__lista li {
+      flex: none;
+      width: 82%;
+      scroll-snap-align: start;
+    }
+  }
+</style>

@@ -1,0 +1,94 @@
+---
+// Chamada final sobre uma foto de ponta a ponta com a borda de cima curva
+// (fecha a página espelhando o topo).
+import Foto from '../comum/Foto.astro';
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.final;
+---
+
+<section class="ff" id="agendar">
+  <div class="ff__midia" aria-hidden="true">
+    <Foto class="ff__foto" foto={site.fotos.final ?? site.fotos.hero} sizes="(max-width: 899px) 250vw, 100vw" />
+  </div>
+  <div class="container ff__conteudo">
+    <p class="sobrelinha ff__sobrelinha" data-revelar>{t.sobrelinha}</p>
+    <h2 class="titulo titulo--2 ff__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+    <p class="ff__texto" data-revelar style="--atraso:180ms">{t.texto}</p>
+    <a class="botao botao--claro ff__botao" href={site.links.agendar} target="_blank" rel="noopener" data-revelar style="--atraso:240ms">
+      <Icone nome="whatsapp" />
+      {t.cta}
+    </a>
+  </div>
+</section>
+
+<style>
+  .ff {
+    position: relative;
+    margin-top: clamp(24px, 4vw, 56px);
+    padding-block: clamp(120px, 14vw, 200px) clamp(96px, 11vw, 160px);
+    color: var(--sobre-escuro);
+    isolation: isolate;
+    text-align: center;
+  }
+
+  .ff__midia {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    border-radius: 50% 50% 0 0 / 80px 80px 0 0;
+    background: var(--escuro);
+  }
+
+  .ff__midia::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--escuro) 72%, transparent);
+  }
+
+  .ff__foto {
+    width: 100%;
+    height: 100%;
+  }
+
+  .ff__conteudo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ff__sobrelinha {
+    color: var(--sobre-escuro);
+  }
+
+  .ff__titulo {
+    max-width: 16ch;
+    margin-top: 16px;
+  }
+
+  .ff__texto {
+    max-width: 44ch;
+    margin-top: 22px;
+    font-size: 17px;
+    line-height: 1.65;
+    color: color-mix(in srgb, var(--sobre-escuro) 86%, transparent);
+  }
+
+  .ff__botao {
+    margin-top: 36px;
+  }
+
+  @media (max-width: 899px) {
+    .ff__midia {
+      border-radius: 50% 50% 0 0 / 36px 36px 0 0;
+    }
+
+    .ff__botao {
+      align-self: stretch;
+    }
+  }
+</style>

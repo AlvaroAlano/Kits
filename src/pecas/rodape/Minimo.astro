@@ -1,0 +1,70 @@
+---
+// Rodapé mínimo e escuro: marca, atalhos e créditos.
+import Marca from '../comum/Marca.astro';
+
+const { site } = Astro.props;
+const { cliente, ano, estilo } = site;
+const { profissional } = cliente;
+---
+
+<footer class="rm">
+  <div class="container rm__linha">
+    <a href="#topo" class="rm__marca" aria-label={`${cliente.nome}, voltar ao início`}>
+      <Marca site={site} clara />
+    </a>
+    <nav aria-label="Rodapé">
+      <ul class="rm__menu">
+        {estilo.menu.map((item) => <li><a href={`#${item.ancora}`}>{item.rotulo}</a></li>)}
+      </ul>
+    </nav>
+  </div>
+  <div class="container rm__base">
+    <p>© {ano} {cliente.nome} · Responsável técnica: {profissional.nome} · {profissional.registro}</p>
+    <p>Site por Convcard</p>
+  </div>
+</footer>
+
+<style>
+  .rm {
+    padding-block: 48px calc(28px + env(safe-area-inset-bottom));
+    background: var(--tinta);
+    color: var(--fundo);
+  }
+
+  .rm__linha {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid color-mix(in srgb, var(--fundo) 16%, transparent);
+  }
+
+  .rm__marca {
+    --marca-tamanho: 1.3rem;
+    --marca-cor: var(--fundo);
+  }
+
+  .rm__menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .rm__menu a:hover {
+    color: var(--destaque-escuro);
+  }
+
+  .rm__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 32px;
+    padding-top: 22px;
+    font-size: 13px;
+    color: color-mix(in srgb, var(--fundo) 65%, transparent);
+  }
+</style>

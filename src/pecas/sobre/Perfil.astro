@@ -1,0 +1,176 @@
+---
+// Sobre a especialista em formato de perfil: retrato redondo, apresentação e linha do tempo da formação.
+import Foto from '../comum/Foto.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.sobre;
+const { profissional } = site.cliente;
+const formacao = profissional.formacao ?? [];
+---
+
+<section class="perfil secao" id="especialista">
+  <div class="container">
+    <div class="perfil__cartao">
+      <div class="perfil__lado">
+        <Foto class="perfil__foto" foto={site.fotos.especialista} forma="circulo" anel sizes="(min-width: 900px) 340px, 64vw" />
+        <div class="perfil__id" data-revelar>
+          <p class="perfil__nome">{profissional.nome}</p>
+          <p class="perfil__titulo">{profissional.titulo}</p>
+          <p class="perfil__registro">{profissional.registro}</p>
+        </div>
+      </div>
+
+      <div class="perfil__conteudo">
+        <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+        <h2 class="titulo titulo--2 perfil__h2" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+        <div class="perfil__textos">
+          {t.paragrafos.map((p, i) => <p class="texto" data-revelar style={`--atraso:${150 + i * 80}ms`}>{p}</p>)}
+        </div>
+
+        {
+          formacao.length > 0 && (
+            <div class="perfil__formacao" data-revelar>
+              <h3>{t.formacao}</h3>
+              <ol>
+                {formacao.map((f) => (
+                  <li>
+                    <span>{f.ano}</span>
+                    <p>{f.titulo}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .perfil {
+    padding-top: 0;
+  }
+
+  .perfil__cartao {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(40px, 6vw, 96px);
+    padding: clamp(28px, 5.5vw, 80px);
+    border-radius: 32px;
+    background: var(--fundo-alt);
+  }
+
+  .perfil__lado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .perfil__foto {
+    --anel-distancia: 14px;
+    width: min(100%, 340px);
+    margin-top: 14px;
+  }
+
+  .perfil__id {
+    margin-top: 40px;
+  }
+
+  .perfil__nome {
+    font-family: var(--fonte-titulo);
+    font-size: 2rem;
+    line-height: 1.1;
+  }
+
+  .perfil__titulo {
+    margin-top: 6px;
+    font-size: 15px;
+    color: var(--tinta-suave);
+  }
+
+  .perfil__titulo::first-letter {
+    text-transform: uppercase;
+  }
+
+  .perfil__registro {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 6px 12px;
+    border: 1px solid var(--linha-forte);
+    border-radius: 999px;
+    font-family: var(--fonte-rotulo);
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    color: var(--tinta-suave);
+  }
+
+  .perfil__h2 {
+    margin-top: 24px;
+  }
+
+  .perfil__textos {
+    display: grid;
+    gap: 16px;
+    margin-top: 28px;
+  }
+
+  .perfil__formacao {
+    margin-top: 48px;
+  }
+
+  .perfil__formacao h3 {
+    font-family: var(--fonte-rotulo);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+  }
+
+  .perfil__formacao ol {
+    margin-top: 14px;
+  }
+
+  .perfil__formacao li {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 16px;
+    padding-block: 14px;
+    border-top: 1px solid var(--linha);
+  }
+
+  .perfil__formacao li span {
+    font-family: var(--fonte-rotulo);
+    font-size: 13px;
+    color: var(--destaque);
+    padding-top: 2px;
+  }
+
+  .perfil__formacao li p {
+    font-size: 15.5px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 899px) {
+    .perfil__cartao {
+      grid-template-columns: 1fr;
+      padding: 40px 24px 32px;
+      border-radius: 28px;
+    }
+
+    .perfil__foto {
+      width: min(64vw, 280px);
+    }
+
+    .perfil__id {
+      margin-top: 32px;
+    }
+
+    .perfil__formacao li {
+      grid-template-columns: 52px 1fr;
+    }
+  }
+</style>

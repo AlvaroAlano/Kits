@@ -1,0 +1,127 @@
+{
+  "id": "essencial",
+  "nome": "Essencial",
+  "descricao": "Jovem, direto e cheio de cor. Para quem quer transmitir leveza, praticidade e uma conversa sem rodeios.",
+  "fontes": {
+    "url": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400..700&display=swap",
+    "titulo": "'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif",
+    "texto": "'Hanken Grotesk', 'Segoe UI', system-ui, sans-serif"
+  },
+  "filtroFoto": "saturate(1.04) contrast(1.02)",
+  "paleta": {
+    "fundo": { "l": 0.978, "c": 0.006 },
+    "fundoAlt": { "l": 0.935, "c": 0.024 },
+    "tinta": { "l": 0.2, "c": 0.012 },
+    "tintaSuave": { "l": 0.45, "c": 0.016 },
+    "destaque": { "l": 0.6, "c": 0.15 },
+    "escuro": { "l": 0.5, "c": 0.15 },
+    "sobreEscuro": { "l": 0.985, "c": 0.008 },
+    "destaqueEscuro": { "l": 0.9, "c": 0.06 }
+  },
+  "cabecalho": "cabecalho/minimo",
+  "secoes": [
+    "hero/tipografico",
+    "sobre/lateral",
+    "servicos/abas",
+    "galeria/faixa",
+    "social/instagram",
+    "local/faixa",
+    "final/bloco"
+  ],
+  "rodape": "rodape/minimo",
+  "flutuante": "flutuante/nenhum",
+  "menu": [
+    { "rotulo": "Sobre", "ancora": "sobre" },
+    { "rotulo": "Tratamentos", "ancora": "tratamentos" },
+    { "rotulo": "Estúdio", "ancora": "espaco" },
+    { "rotulo": "Contato", "ancora": "contato" }
+  ],
+  "textos": {
+    "cortina": {
+      "agendar": "Agendar",
+      "menu": "Menu",
+      "abrir": "Abrir menu",
+      "fechar": "Fechar menu"
+    },
+    "hero": {
+      "sobrelinha": "{segmento} · {cidade}",
+      "titulo": "Pele [1] *boa*,\nsem mistério [2]",
+      "texto": "Tratamentos explicados do começo ao fim, com preço claro e resultado natural. Você entende tudo antes de começar.",
+      "cta": "Agendar no WhatsApp",
+      "ctaSecundario": "Ver tratamentos"
+    },
+    "sobre": {
+      "sobrelinha": "quem vai te atender",
+      "titulo": "Prazer, eu sou\na *{primeiroNome}*.",
+      "paragrafos": [
+        "Sou {titulo} há {anos} anos e meu jeito de trabalhar é simples: explicar tudo sem termos difíceis e indicar só o que a sua pele precisa.",
+        "Nada de pacote empurrado nem resultado artificial. Aqui você entende cada passo e decide junto comigo."
+      ],
+      "numeros": [
+        { "valor": "{anos}", "rotulo": "anos de experiência" },
+        { "valor": "4 mil", "rotulo": "atendimentos" },
+        { "valor": "100%", "rotulo": "planos personalizados" }
+      ],
+      "adesivo": "desde {desde}"
+    },
+    "servicos": {
+      "sobrelinha": "tratamentos",
+      "titulo": "O que a gente\n*faz* por aqui.",
+      "texto": "Escolha a categoria e veja os valores. Tocou, abriu o WhatsApp com o tratamento já escrito.",
+      "abasRotulo": "Categorias de tratamento",
+      "aPartirDe": "a partir de"
+    },
+    "galeria": {
+      "sobrelinha": "o estúdio",
+      "titulo": "Dá uma\n*espiada*.",
+      "texto": "Um espaço claro, leve e sem cara de consultório. Do jeito que cuidar da pele deveria ser."
+    },
+    "social": {
+      "sobrelinha": "segue a gente",
+      "texto": "Dicas de skincare, bastidores e horários livres aparecem primeiro no Instagram.",
+      "cta": "Seguir no Instagram"
+    },
+    "local": {
+      "titulo": "Onde a gente\n*fica*.",
+      "endereco": "Endereço",
+      "horarios": "Horários",
+      "contato": "Contato",
+      "maps": "Google Maps",
+      "waze": "Waze"
+    },
+    "final": {
+      "sobrelinha": "sem enrolação",
+      "titulo": "Bora\n*marcar*?",
+      "texto": "Me chama no WhatsApp e eu já te passo os horários livres.",
+      "cta": "Chamar no WhatsApp"
+    }
+  },
+  "fotos": {
+    "hero": {
+      "src": "https://images.unsplash.com/photo-1646457417455-77a66a9fcf34",
+      "alt": "Mulher sorrindo com máscara facial em fundo amarelo",
+      "foco": "50% 35%"
+    },
+    "heroInline": [
+      { "src": "https://images.unsplash.com/photo-1632127579802-ff69469091a4", "alt": "Textura de creme sobre fundo laranja", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1646457417455-77a66a9fcf34", "alt": "Mulher sorrindo com máscara facial", "foco": "50% 35%" }
+    ],
+    "especialista": {
+      "src": "https://images.unsplash.com/photo-1580489944761-15a19d654956",
+      "alt": "Retrato sorridente da especialista",
+      "foco": "50% 25%"
+    },
+    "galeria": [
+      { "src": "https://images.unsplash.com/photo-1693004927824-f2623bbedc8b", "alt": "Aplicação de creme no rosto", "foco": "50% 40%" },
+      { "src": "https://images.unsplash.com/photo-1603401712778-ab0575182f12", "alt": "Amostras de creme no braço", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1594756154841-ac5d160dbf46", "alt": "Cliente rindo durante o atendimento", "foco": "50% 30%" },
+      { "src": "https://images.unsplash.com/photo-1518842013791-b874be246c34", "alt": "Gotas de óleo sobre fundo laranja", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1599847987657-881f11b92a75", "alt": "Bruma facial na frente do espelho", "foco": "50% 35%" },
+      { "src": "https://images.unsplash.com/photo-1670201203129-65c022f0ed8e", "alt": "Máscara facial sendo retirada", "foco": "50% 40%" },
+      { "src": "https://images.unsplash.com/photo-1702312686917-2dbf264df4ed", "alt": "Aplicação de sérum com conta-gotas", "foco": "50% 30%" },
+      { "src": "https://images.unsplash.com/photo-1613216512748-39895e7e9675", "alt": "Textura líquida em tons de laranja", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1599847971294-0a4e3c53cbfc", "alt": "Cliente sorrindo no espelho", "foco": "50% 40%" },
+      { "src": "https://images.unsplash.com/photo-1617812191081-2a24e3f30e45", "alt": "Mulher de cabelo cacheado rindo", "foco": "50% 30%" }
+    ]
+  }
+}

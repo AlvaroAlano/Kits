@@ -1,0 +1,179 @@
+---
+// Topo "portal": um arco alto no centro, com o título de um lado e o texto do outro.
+// Uma anotação manuscrita com seta aponta para o arco. No celular: arco em cima, texto embaixo.
+import Foto from '../comum/Foto.astro';
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.hero;
+---
+
+<section class="pt" id="topo">
+  <div class="container pt__grade">
+    <div class="pt__esq">
+      <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+      <h1 class="titulo titulo--1 pt__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+    </div>
+
+    <div class="pt__arco" data-revelar style="--atraso:60ms">
+      <Foto class="pt__foto" foto={site.fotos.hero} forma="arco" anel prioridade sizes="(min-width: 900px) 30vw, 84vw" />
+      {
+        t.nota && (
+          <p class="pt__nota" aria-hidden="true">
+            <span>{t.nota}</span>
+            <svg viewBox="0 0 90 60" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 8c22 2 44 12 58 34" />
+              <path d="M50 40l13 3 1-13" />
+            </svg>
+          </p>
+        )
+      }
+    </div>
+
+    <div class="pt__dir" data-revelar style="--atraso:220ms">
+      <p class="texto">{t.texto}</p>
+      <div class="pt__acoes">
+        <a class="botao" href={site.links.agendar} target="_blank" rel="noopener">
+          <Icone nome="whatsapp" />
+          {t.cta}
+        </a>
+        <a class="link-seta" href="#tratamentos">{t.ctaSecundario} <Icone nome="seta" /></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pt {
+    padding-block: clamp(48px, 6vw, 88px) clamp(40px, 5vw, 72px);
+  }
+
+  .pt__grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(280px, 26vw, 380px) minmax(0, 1fr);
+    gap: clamp(32px, 4vw, 64px);
+    align-items: end;
+  }
+
+  .pt__esq {
+    padding-bottom: 12%;
+    text-align: right;
+  }
+
+  .pt__esq .sobrelinha {
+    justify-content: flex-end;
+  }
+
+  .pt__titulo {
+    margin-top: 20px;
+  }
+
+  .pt__arco {
+    position: relative;
+  }
+
+  .pt__foto {
+    --anel-distancia: 16px;
+    aspect-ratio: 3 / 4.3;
+  }
+
+  /* fica no alto, onde a coluna do título está vazia (o título se apoia embaixo) */
+  .pt__nota {
+    position: absolute;
+    left: -60%;
+    top: 12%;
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    font-family: var(--fonte-assinatura);
+    font-size: 1.45rem;
+    line-height: 1.1;
+    color: var(--destaque);
+    transform: rotate(-4deg);
+  }
+
+  .pt__nota span {
+    max-width: 11ch;
+    text-align: right;
+  }
+
+  .pt__nota svg {
+    flex: none;
+    width: 70px;
+    margin-top: 10px;
+  }
+
+  .pt__dir {
+    padding-bottom: 12%;
+  }
+
+  .pt__dir .texto {
+    max-width: 34ch;
+  }
+
+  .pt__acoes {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    margin-top: 32px;
+  }
+
+  /* a anotação só cabe quando a coluna do título é larga */
+  @media (max-width: 1239px) {
+    .pt__nota {
+      display: none;
+    }
+  }
+
+  /* abaixo de 1024px as três colunas ficam estreitas demais: empilha */
+  @media (max-width: 1023px) {
+    .pt {
+      padding-top: 8px;
+    }
+
+    .pt__grade {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .pt__arco {
+      order: -1;
+      width: min(84%, 380px);
+      margin: 18px auto 0;
+    }
+
+    .pt__esq,
+    .pt__dir {
+      padding-bottom: 0;
+      text-align: center;
+    }
+
+    .pt__esq {
+      margin-top: 40px;
+    }
+
+    .pt__esq .sobrelinha {
+      justify-content: center;
+    }
+
+    .pt__dir {
+      margin-top: 20px;
+    }
+
+    .pt__dir .texto {
+      margin-inline: auto;
+    }
+
+    .pt__acoes {
+      align-items: center;
+    }
+
+    .pt__acoes .botao {
+      align-self: stretch;
+    }
+  }
+</style>

@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import { pecas } from '../../pecas/index.js';
+import { clientes, estilosDoCliente, montarSite } from '../../lib/site.js';
+
+export function getStaticPaths() {
+  return clientes.flatMap((cliente) =>
+    estilosDoCliente(cliente).map((estilo) => ({
+      params: { cliente: cliente.slug, estilo },
+      props: { cliente, estilo },
+    })),
+  );
+}
+
+const { cliente, estilo } = Astro.props;
+const site = montarSite(cliente, estilo);
+
+const peca = (nome) => {
+  if (!pecas[nome]) throw new Error(`Peça "${nome}" não existe (usada no estilo "${estilo}").`);
+  return pecas[nome];
+};
+const Cabecalho = peca(site.estilo.cabecalho);
+const Rodape = peca(site.estilo.rodape);
+const Flutuante = peca(site.estilo.flutuante ?? 'flutuante/barra');
+const secoes = (cliente.secoes ?? site.estilo.secoes).map(peca);
+---
+
+<Base site={site}>
+  <Cabecalho site={site} />
+  <main>
+    {secoes.map((Secao) => <Secao site={site} />)}
+  </main>
+  <Rodape site={site} />
+  <Flutuante site={site} />
+</Base>

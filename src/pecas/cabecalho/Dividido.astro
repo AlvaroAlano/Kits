@@ -1,0 +1,369 @@
+---
+// Cabeçalho "dividido": menu à esquerda, marca no centro, agendar à direita.
+// No celular vira marca + botão "Menu" que abre um menu de tela cheia.
+import Marca from '../comum/Marca.astro';
+import Icone from '../comum/Icone.astro';
+
+const { site } = Astro.props;
+const { estilo, cliente, links } = site;
+const { endereco } = cliente;
+---
+
+<header class="cab" data-cab>
+  <div class="cab__barra container">
+    <nav class="cab__nav" aria-label="Principal">
+      <ul>
+        {estilo.menu.map((item) => <li><a href={`#${item.ancora}`}>{item.rotulo}</a></li>)}
+      </ul>
+    </nav>
+
+    <a href="#topo" class="cab__marca" aria-label={`${cliente.nome}, voltar ao início`}>
+      <Marca site={site} />
+    </a>
+
+    <div class="cab__acoes">
+      {
+        links.instagram && (
+          <a class="cab__insta" href={links.instagram} target="_blank" rel="noopener" aria-label="Instagram">
+            <Icone nome="instagram" />
+          </a>
+        )
+      }
+      <a class="cab__agendar" href={links.agendar} target="_blank" rel="noopener">Agendar</a>
+      <button class="cab__menu" type="button" aria-expanded="false" aria-controls="menu-movel" data-abrir-menu>
+        <span>Menu</span>
+        <span class="cab__menu-icone" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="menu" id="menu-movel" data-menu inert>
+  <div class="menu__topo container">
+    <Marca site={site} />
+    <button class="menu__fechar" type="button" data-fechar-menu>Fechar</button>
+  </div>
+
+  <nav class="menu__nav container" aria-label="Menu">
+    <ol>
+      {
+        estilo.menu.map((item, i) => (
+          <li style={`--i:${i}`}>
+            <a href={`#${item.ancora}`} data-fechar-menu>
+              <span class="menu__num">{String(i + 1).padStart(2, '0')}</span>
+              {item.rotulo}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+
+  <div class="menu__rodape container">
+    <a class="botao" href={links.agendar} target="_blank" rel="noopener">
+      <Icone nome="whatsapp" /> Agendar avaliação
+    </a>
+    <p>{endereco.linha1}<br />{endereco.bairro} · {endereco.cidade}/{endereco.uf}</p>
+    {
+      links.instagram && (
+        <a class="menu__insta" href={links.instagram} target="_blank" rel="noopener">
+          @{cliente.contato.instagram}
+        </a>
+      )
+    }
+  </div>
+</div>
+
+<script>
+  const cab = document.querySelector('[data-cab]');
+  const menu = document.querySelector('[data-menu]');
+  const abrir = document.querySelector('[data-abrir-menu]');
+  let ultimoY = window.scrollY;
+
+  // Fica sólido ao rolar; some ao descer e volta ao subir.
+  window.addEventListener(
+    'scroll',
+    () => {
+      const y = window.scrollY;
+      cab.classList.toggle('cab--solida', y > 24);
+      cab.classList.toggle('cab--oculta', y > 520 && y > ultimoY + 4);
+      if (y < ultimoY - 4) cab.classList.remove('cab--oculta');
+      ultimoY = y;
+    },
+    { passive: true },
+  );
+
+  function alternarMenu(aberto) {
+    menu.classList.toggle('menu--aberto', aberto);
+    menu.inert = !aberto;
+    abrir.setAttribute('aria-expanded', String(aberto));
+    document.documentElement.classList.toggle('sem-rolagem', aberto);
+  }
+
+  abrir.addEventListener('click', () => alternarMenu(true));
+  menu.querySelectorAll('[data-fechar-menu]').forEach((el) => el.addEventListener('click', () => alternarMenu(false)));
+  window.addEventListener('keydown', (e) => e.key === 'Escape' && alternarMenu(false));
+</script>
+
+<style>
+  .cab {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    transition:
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      background-color 0.4s,
+      box-shadow 0.4s;
+  }
+
+  .cab--solida {
+    background: var(--fundo-vidro);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 1px 0 var(--linha);
+  }
+
+  .cab--oculta {
+    transform: translateY(-100%);
+  }
+
+  .cab__barra {
+    height: var(--altura-cab);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .cab__nav ul {
+    display: flex;
+    gap: clamp(20px, 2vw, 36px);
+  }
+
+  .cab__nav a,
+  .cab__agendar,
+  .cab__menu {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .cab__nav a {
+    position: relative;
+    padding-block: 6px;
+  }
+
+  .cab__nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .cab__nav a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .cab__marca {
+    --marca-tamanho: 1.45rem;
+    justify-self: center;
+  }
+
+  .cab__acoes {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .cab__insta {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    color: var(--tinta-suave);
+    transition: color 0.3s;
+  }
+
+  .cab__insta:hover {
+    color: var(--tinta);
+  }
+
+  .cab__agendar {
+    padding: 13px 24px;
+    border: 1px solid var(--tinta);
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .cab__agendar:hover {
+    background: var(--tinta);
+    color: var(--fundo);
+  }
+
+  .cab__menu {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+  }
+
+  .cab__menu-icone {
+    display: grid;
+    gap: 5px;
+    width: 22px;
+  }
+
+  .cab__menu-icone i {
+    display: block;
+    height: 1px;
+    background: currentColor;
+  }
+
+  .cab__menu-icone i:last-child {
+    width: 14px;
+    justify-self: end;
+  }
+
+  /* Abaixo de 1200px o menu não cabe dos dois lados da marca: vira botão "Menu" */
+  @media (max-width: 1199px) {
+    .cab__barra {
+      grid-template-columns: 1fr auto;
+    }
+
+    .cab__nav,
+    .cab__insta,
+    .cab__agendar {
+      display: none;
+    }
+
+    .cab__marca {
+      --marca-tamanho: 1.18rem;
+      justify-self: start;
+    }
+
+    .cab__marca :global(.marca) {
+      align-items: flex-start;
+    }
+
+    .cab__menu {
+      display: inline-flex;
+    }
+  }
+
+  /* Menu de tela cheia (celular e tablet) */
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    background: var(--fundo);
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      opacity 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+      visibility 0s linear 0.45s;
+  }
+
+  .menu--aberto {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .menu__topo {
+    height: var(--altura-cab);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--linha);
+  }
+
+  .menu__topo :global(.marca) {
+    --marca-tamanho: 1.18rem;
+    align-items: flex-start;
+  }
+
+  .menu__fechar {
+    min-height: 44px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+
+  .menu__nav {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .menu__nav ol {
+    width: 100%;
+  }
+
+  .menu__nav li {
+    border-bottom: 1px solid var(--linha);
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .menu--aberto .menu__nav li {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.12s + var(--i) * 0.06s);
+  }
+
+  .menu__nav a {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    padding-block: 16px;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2rem, 8vw, 2.75rem);
+    line-height: 1.1;
+  }
+
+  .menu__num {
+    font-family: var(--fonte-texto);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--tinta-suave);
+  }
+
+  .menu__rodape {
+    display: grid;
+    gap: 18px;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom));
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--tinta-suave);
+  }
+
+  .menu__rodape .botao {
+    width: 100%;
+  }
+
+  .menu__insta {
+    color: var(--tinta);
+  }
+
+  @media (min-width: 1200px) {
+    .menu {
+      display: none;
+    }
+  }
+</style>

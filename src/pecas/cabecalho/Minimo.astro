@@ -1,0 +1,298 @@
+---
+// Cabeçalho mínimo, igual em todas as telas: marca, botão "Agendar" sempre visível e um botão
+// de menu que desce uma "cortina" colorida do topo com os links grandes.
+import Marca from '../comum/Marca.astro';
+import Icone from '../comum/Icone.astro';
+
+const { site } = Astro.props;
+const { estilo, cliente, links } = site;
+const t = site.textos.cortina;
+const { endereco, contato } = cliente;
+---
+
+<header class="mn" data-mn>
+  <div class="container mn__barra">
+    <a href="#topo" class="mn__marca" aria-label={`${cliente.nome}, voltar ao início`}>
+      <Marca site={site} />
+    </a>
+    <div class="mn__acoes">
+      <a class="mn__agendar" href={links.agendar} target="_blank" rel="noopener">
+        <Icone nome="whatsapp" />
+        <span>{t.agendar}</span>
+      </a>
+      <button class="mn__menu" type="button" aria-expanded="false" aria-controls="cortina" aria-label={t.abrir} data-abrir-cortina>
+        <span aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="cortina" id="cortina" data-cortina inert>
+  <div class="cortina__fundo" data-fechar-cortina></div>
+  <div class="cortina__painel escuro" role="dialog" aria-modal="true" aria-label={t.menu}>
+    <div class="container cortina__topo">
+      <span>{t.menu}</span>
+      <button type="button" class="cortina__fechar" aria-label={t.fechar} data-fechar-cortina><span aria-hidden="true"></span></button>
+    </div>
+    <nav class="container">
+      <ol class="cortina__lista">
+        {
+          estilo.menu.map((item, i) => (
+            <li style={`--i:${i}`}>
+              <a href={`#${item.ancora}`} data-fechar-cortina>
+                <span>{String(i + 1).padStart(2, '0')}</span>
+                {item.rotulo}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+    <div class="container cortina__rodape">
+      <p>{endereco.linha1} · {endereco.bairro}, {endereco.cidade}</p>
+      {links.instagram && <a href={links.instagram} target="_blank" rel="noopener">@{contato.instagram}</a>}
+    </div>
+  </div>
+</div>
+
+<script>
+  const cab = document.querySelector('[data-mn]');
+  const cortina = document.querySelector('[data-cortina]');
+  const abrir = document.querySelector('[data-abrir-cortina]');
+
+  window.addEventListener('scroll', () => cab.classList.toggle('mn--rolou', window.scrollY > 8), { passive: true });
+
+  function alternar(aberta) {
+    cortina.classList.toggle('cortina--aberta', aberta);
+    cortina.inert = !aberta;
+    abrir.setAttribute('aria-expanded', String(aberta));
+    document.documentElement.classList.toggle('sem-rolagem', aberta);
+  }
+
+  abrir.addEventListener('click', () => alternar(true));
+  cortina.querySelectorAll('[data-fechar-cortina]').forEach((el) => el.addEventListener('click', () => alternar(false)));
+  window.addEventListener('keydown', (e) => e.key === 'Escape' && alternar(false));
+</script>
+
+<style>
+  .mn {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    background: var(--fundo-vidro);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    transition: box-shadow 0.3s;
+  }
+
+  .mn--rolou {
+    box-shadow: 0 1px 0 var(--linha);
+  }
+
+  .mn__barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: var(--altura-cab);
+  }
+
+  .mn__marca {
+    --marca-tamanho: 1.35rem;
+  }
+
+  .mn__acoes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .mn__agendar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 46px;
+    padding: 0 20px 0 16px;
+    border-radius: 999px;
+    background: var(--escuro);
+    color: var(--sobre-escuro);
+    font-size: 15px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+  }
+
+  .mn__agendar:hover {
+    background: var(--tinta);
+  }
+
+  .mn__agendar :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  .mn__menu {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1.5px solid var(--tinta);
+    border-radius: 50%;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .mn__menu:hover {
+    background: var(--tinta);
+    color: var(--fundo);
+  }
+
+  .mn__menu span {
+    display: grid;
+    gap: 5px;
+    width: 18px;
+  }
+
+  .mn__menu i {
+    display: block;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+  }
+
+  @media (max-width: 599px) {
+    .mn__marca {
+      --marca-tamanho: 1.15rem;
+    }
+
+    .mn__agendar {
+      padding: 0 16px 0 14px;
+    }
+  }
+
+  /* Cortina: desce do topo */
+  .cortina {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    visibility: hidden;
+    transition: visibility 0s linear 0.55s;
+  }
+
+  .cortina--aberta {
+    visibility: visible;
+    transition: none;
+  }
+
+  .cortina__fundo {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 0 0 / 0.4);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .cortina--aberta .cortina__fundo {
+    opacity: 1;
+  }
+
+  .cortina__painel {
+    position: absolute;
+    inset: 0 0 auto;
+    max-height: 100dvh;
+    overflow-y: auto;
+    padding-bottom: 36px;
+    border-radius: 0 0 28px 28px;
+    transform: translateY(-100%);
+    transition: transform 0.55s cubic-bezier(0.7, 0, 0.2, 1);
+  }
+
+  .cortina--aberta .cortina__painel {
+    transform: none;
+  }
+
+  .cortina__topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--altura-cab);
+    font-weight: 600;
+  }
+
+  .cortina__fechar {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+  }
+
+  .cortina__fechar span::before,
+  .cortina__fechar span::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .cortina__fechar span::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  .cortina__lista {
+    margin-top: 12px;
+  }
+
+  .cortina__lista li {
+    opacity: 0;
+    transform: translateY(-12px);
+    transition:
+      opacity 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .cortina--aberta .cortina__lista li {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.25s + var(--i) * 0.05s);
+  }
+
+  .cortina__lista a {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding-block: 6px;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2.6rem, 8vw, 6rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    transition: color 0.3s;
+  }
+
+  .cortina__lista a:hover {
+    color: var(--destaque-escuro);
+  }
+
+  .cortina__lista a span {
+    font-family: var(--fonte-texto);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0;
+    opacity: 0.75;
+  }
+
+  .cortina__rodape {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--linha-escuro);
+    font-size: 14.5px;
+  }
+</style>

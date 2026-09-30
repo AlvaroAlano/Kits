@@ -1,0 +1,231 @@
+---
+// Barra de navegação presa embaixo (celular e tablet): "Menu" abre uma folha que sobe
+// de baixo; "Agendar" abre o WhatsApp. Tudo ao alcance do polegar.
+import Icone from './Icone.astro';
+
+const { site } = Astro.props;
+const { estilo, cliente, links } = site;
+const t = site.textos.dock;
+const { endereco } = cliente;
+---
+
+<nav class="dock" aria-label="Navegação rápida">
+  <button class="dock__menu" type="button" aria-expanded="false" aria-controls="folha" data-abrir-folha>
+    <Icone nome="menu" />
+    {t.menu}
+  </button>
+  <a class="dock__agendar" href={links.agendar} target="_blank" rel="noopener">
+    <Icone nome="whatsapp" />
+    {t.agendar}
+  </a>
+</nav>
+
+<div class="folha" id="folha" data-folha inert>
+  <div class="folha__fundo" data-fechar-folha></div>
+  <div class="folha__painel" role="dialog" aria-modal="true" aria-label={t.menu}>
+    <div class="folha__topo">
+      <span class="folha__alca" aria-hidden="true"></span>
+      <button type="button" class="folha__fechar" data-fechar-folha>{t.fechar}</button>
+    </div>
+    <ul class="folha__links">
+      {
+        estilo.menu.map((item, i) => (
+          <li style={`--i:${i}`}>
+            <a href={`#${item.ancora}`} data-fechar-folha>
+              {item.rotulo}
+              <Icone nome="seta" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="folha__endereco">
+      <Icone nome="mapa" />
+      <span>{endereco.linha1} · {endereco.bairro}, {endereco.cidade}</span>
+    </p>
+  </div>
+</div>
+
+<script>
+  const folha = document.querySelector('[data-folha]');
+  const abrir = document.querySelector('[data-abrir-folha]');
+
+  function alternar(aberta) {
+    folha.classList.toggle('folha--aberta', aberta);
+    folha.inert = !aberta;
+    abrir.setAttribute('aria-expanded', String(aberta));
+    document.documentElement.classList.toggle('sem-rolagem', aberta);
+  }
+
+  abrir.addEventListener('click', () => alternar(true));
+  folha.querySelectorAll('[data-fechar-folha]').forEach((el) => el.addEventListener('click', () => alternar(false)));
+  window.addEventListener('keydown', (e) => e.key === 'Escape' && alternar(false));
+</script>
+
+<style>
+  .dock {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 10px;
+    padding: 10px var(--margem) calc(10px + env(safe-area-inset-bottom));
+    border-radius: 24px 24px 0 0;
+    background: var(--fundo-vidro);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 -10px 30px -18px rgb(0 0 0 / 0.35);
+  }
+
+  .dock__menu,
+  .dock__agendar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 52px;
+    border-radius: 14px;
+    font-size: 15.5px;
+    font-weight: 600;
+  }
+
+  .dock__menu {
+    background: var(--fundo-alt);
+    color: var(--tinta);
+  }
+
+  .dock__agendar {
+    background: var(--tinta);
+    color: var(--fundo);
+  }
+
+  .dock :global(svg) {
+    width: 19px;
+    height: 19px;
+  }
+
+  /* Folha do menu */
+  .folha {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    visibility: hidden;
+    transition: visibility 0s linear 0.5s;
+  }
+
+  .folha--aberta {
+    visibility: visible;
+    transition: none;
+  }
+
+  .folha__fundo {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 0 0 / 0.35);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .folha--aberta .folha__fundo {
+    opacity: 1;
+  }
+
+  .folha__painel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 86dvh;
+    overflow-y: auto;
+    padding: 12px var(--margem) calc(24px + env(safe-area-inset-bottom));
+    border-radius: 28px 28px 0 0;
+    background: var(--fundo);
+    transform: translateY(100%);
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .folha--aberta .folha__painel {
+    transform: none;
+  }
+
+  .folha__topo {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 44px;
+  }
+
+  .folha__alca {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 44px;
+    height: 5px;
+    border-radius: 5px;
+    background: var(--linha-forte);
+    transform: translateX(-50%);
+  }
+
+  .folha__fechar {
+    min-height: 44px;
+    padding-inline: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--tinta-suave);
+  }
+
+  .folha__links li {
+    border-bottom: 1px solid var(--linha);
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .folha--aberta .folha__links li {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.12s + var(--i) * 0.05s);
+  }
+
+  .folha__links a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 18px;
+    font-family: var(--fonte-titulo);
+    font-size: 1.9rem;
+    font-weight: 350;
+    line-height: 1.1;
+  }
+
+  .folha__links a :global(svg) {
+    color: var(--destaque);
+  }
+
+  .folha__endereco {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--tinta-suave);
+  }
+
+  .folha__endereco :global(svg) {
+    flex: none;
+    margin-top: 1px;
+  }
+
+  @media (min-width: 1024px) {
+    .dock,
+    .folha {
+      display: none;
+    }
+  }
+</style>

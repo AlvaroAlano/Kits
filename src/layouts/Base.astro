@@ -1,0 +1,100 @@
+---
+import '../estilos/base.css';
+import { semMarcas } from '../lib/texto.js';
+
+// Ajustes visuais de cada estilo (escopados por html[data-estilo="..."])
+import.meta.glob('../estilos/*/estilo.css', { eager: true });
+
+const { site } = Astro.props;
+const { paleta, estilo, textos, cliente } = site;
+
+const tokens = `:root{
+  --fundo:${paleta.fundo};
+  --fundo-alt:${paleta.fundoAlt};
+  --fundo-vidro:${paleta.fundoVidro};
+  --fundo-translucido:${paleta.fundoTranslucido};
+  --tinta:${paleta.tinta};
+  --tinta-suave:${paleta.tintaSuave};
+  --destaque:${paleta.destaque};
+  --escuro:${paleta.escuro};
+  --sobre-escuro:${paleta.sobreEscuro};
+  --sobre-escuro-suave:${paleta.sobreEscuroSuave};
+  --destaque-escuro:${paleta.destaqueEscuro};
+  --linha:${paleta.linha};
+  --linha-forte:${paleta.linhaForte};
+  --linha-escuro:${paleta.linhaEscuro};
+  --fonte-titulo:${estilo.fontes.titulo};
+  --fonte-texto:${estilo.fontes.texto};
+  --fonte-assinatura:${estilo.fontes.assinatura ?? 'cursive'};
+  --fonte-rotulo:${estilo.fontes.rotulo ?? estilo.fontes.texto};
+  --filtro-foto:${estilo.filtroFoto ?? 'none'};
+  --largura:1360px;
+  --margem:clamp(20px, 5vw, 72px);
+  --colunas-gap:clamp(16px, 2vw, 28px);
+  --espaco-secao:clamp(96px, 12vw, 176px);
+  --altura-cab:64px;
+}
+@media (min-width:1024px){:root{--altura-cab:84px}}`;
+
+const tituloPagina = `${cliente.nome} · ${cliente.segmento} em ${cliente.endereco.cidade}`;
+const descricao = semMarcas(textos.hero.texto);
+const iniciais = cliente.nome
+  .split(' ')
+  .filter((p) => p.length > 2)
+  .slice(0, 2)
+  .map((p) => p[0])
+  .join('');
+const favicon =
+  'data:image/svg+xml,' +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="${paleta.escuro}"/><text x="32" y="42" font-family="Georgia,serif" font-size="26" fill="${paleta.destaqueEscuro}" text-anchor="middle">${iniciais}</text></svg>`,
+  );
+---
+
+<!doctype html>
+<html lang="pt-BR" data-estilo={estilo.id}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{tituloPagina}</title>
+    <meta name="description" content={descricao} />
+    {site.demo && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content={paleta.fundo} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content={tituloPagina} />
+    <meta property="og:description" content={descricao} />
+    <link rel="icon" href={favicon} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="stylesheet" href={estilo.fontes.url} />
+    <style is:inline set:html={tokens}></style>
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <slot />
+
+    <script is:inline>
+      (() => {
+        const itens = document.querySelectorAll('[data-revelar]');
+        const semMovimento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (semMovimento || !('IntersectionObserver' in window)) {
+          itens.forEach((el) => el.classList.add('visivel'));
+          return;
+        }
+        const observador = new IntersectionObserver(
+          (entradas) => {
+            for (const entrada of entradas) {
+              if (!entrada.isIntersecting) continue;
+              entrada.target.classList.add('visivel');
+              observador.unobserve(entrada.target);
+            }
+          },
+          { rootMargin: '0px 0px -6% 0px', threshold: 0.06 },
+        );
+        itens.forEach((el) => observador.observe(el));
+      })();
+    </script>
+  </body>
+</html>

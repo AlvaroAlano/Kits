@@ -1,0 +1,128 @@
+{
+  "id": "acolhedor",
+  "nome": "Acolhedor",
+  "descricao": "Caloroso e delicado, com arcos e tons nude. Para quem quer transmitir carinho, calma e atenção de perto.",
+  "fontes": {
+    "url": "https://fonts.googleapis.com/css2?family=Young+Serif&family=Nunito+Sans:opsz,wght@6..12,400..800&family=Caveat:wght@500..700&display=swap",
+    "titulo": "'Young Serif', Georgia, serif",
+    "texto": "'Nunito Sans', 'Segoe UI', system-ui, sans-serif",
+    "assinatura": "'Caveat', 'Segoe Print', cursive"
+  },
+  "filtroFoto": "saturate(0.92) sepia(0.05)",
+  "paleta": {
+    "fundo": { "l": 0.972, "c": 0.012, "h": 60 },
+    "fundoAlt": { "l": 0.928, "c": 0.028, "h": 50 },
+    "tinta": { "l": 0.3, "c": 0.035, "h": 45 },
+    "tintaSuave": { "l": 0.5, "c": 0.03, "h": 45 },
+    "destaque": { "l": 0.6, "c": 0.08 },
+    "escuro": { "l": 0.31, "c": 0.045 },
+    "sobreEscuro": { "l": 0.95, "c": 0.018, "h": 60 },
+    "destaqueEscuro": { "l": 0.82, "c": 0.06 }
+  },
+  "cabecalho": "cabecalho/boutique",
+  "secoes": [
+    "hero/portal",
+    "sobre/carta",
+    "servicos/indice",
+    "depoimentos/cartoes",
+    "galeria/arcada",
+    "final/arco"
+  ],
+  "rodape": "rodape/visita",
+  "flutuante": "flutuante/bolha",
+  "menu": [
+    { "rotulo": "Sobre", "ancora": "sobre" },
+    { "rotulo": "Tratamentos", "ancora": "tratamentos" },
+    { "rotulo": "Depoimentos", "ancora": "depoimentos", "requer": "depoimentos" },
+    { "rotulo": "Espaço", "ancora": "espaco" },
+    { "rotulo": "Contato", "ancora": "contato" }
+  ],
+  "textos": {
+    "cabecalho": {
+      "menu": "Menu",
+      "fechar": "Fechar",
+      "agendar": "Agendar",
+      "agendarLongo": "Agendar pelo WhatsApp"
+    },
+    "hero": {
+      "sobrelinha": "{segmento} · {bairro}",
+      "titulo": "Um lugar\npara cuidar\nde *você*.",
+      "texto": "Atendimento com hora marcada, tempo para conversar e tratamentos pensados para a sua pele, sem pressa e sem exageros.",
+      "cta": "Agendar avaliação",
+      "ctaSecundario": "Ver tratamentos",
+      "nota": "com hora marcada e cafezinho passado"
+    },
+    "sobre": {
+      "sobrelinha": "quem vai cuidar de você",
+      "saudacao": "Oi, que bom te ver por aqui!",
+      "titulo": "Eu sou a\n*{primeiroNome}*.",
+      "paragrafos": [
+        "Sou {titulo} há {anos} anos e criei este espaço para ser o lugar onde eu mesma gostaria de ser atendida: calmo, sem pressa e com alguém que escuta de verdade.",
+        "Cada tratamento começa com uma conversa sobre a sua rotina, o que te incomoda e o que você espera. Só depois a gente decide, juntas, o melhor caminho para a sua pele."
+      ],
+      "despedida": "Com carinho,"
+    },
+    "servicos": {
+      "sobrelinha": "tratamentos",
+      "titulo": "Cuidados feitos\n*sob medida*.",
+      "texto": "Os valores são de referência. Na primeira consulta, montamos juntas o plano ideal para você.",
+      "opcoes": "opções",
+      "aPartirDe": "a partir de",
+      "agendar": "Agendar"
+    },
+    "depoimentos": {
+      "sobrelinha": "quem já passou por aqui",
+      "titulo": "Palavras que\n*aquecem*."
+    },
+    "galeria": {
+      "sobrelinha": "o espaço",
+      "titulo": "Pensado para você\nse sentir em *casa*.",
+      "texto": "Luz natural, cheirinho bom e uma paciente por vez. Um intervalo na correria do dia."
+    },
+    "final": {
+      "nota": "a porta está aberta",
+      "titulo": "Vamos marcar a sua\n*primeira visita*?",
+      "texto": "É só chamar no WhatsApp. Eu respondo pessoalmente e te ajudo a escolher o melhor horário.",
+      "cta": "Agendar pelo WhatsApp",
+      "comoChegar": "Como chegar"
+    },
+    "rodape": {
+      "frase": "Esperando por você, com café passado.",
+      "endereco": "Endereço",
+      "horarios": "Horários",
+      "contato": "Contato",
+      "maps": "Google Maps",
+      "waze": "Waze"
+    },
+    "bolha": {
+      "mensagem": "aqui! Quer agendar ou tirar uma dúvida? É só me chamar.",
+      "fechar": "Fechar mensagem",
+      "rotulo": "Conversar pelo WhatsApp"
+    }
+  },
+  "fotos": {
+    "hero": {
+      "src": "https://images.unsplash.com/photo-1662695089827-a92c528df991",
+      "alt": "Mulher de suéter claro sorrindo em fundo bege",
+      "foco": "50% 30%"
+    },
+    "especialista": {
+      "src": "https://images.unsplash.com/photo-1733685372718-6c93d47602c7",
+      "alt": "Retrato da especialista de jaleco no consultório",
+      "foco": "50% 25%"
+    },
+    "categorias": [
+      { "src": "https://images.unsplash.com/photo-1761718209835-c8586b7dcac0", "alt": "Tratamento facial com pincel", "foco": "50% 40%" },
+      { "src": "https://images.unsplash.com/photo-1745434159123-4908d0b9df94", "alt": "Mulher sorrindo com pele natural", "foco": "50% 30%" },
+      { "src": "https://images.unsplash.com/photo-1709118454677-3c0f33528204", "alt": "Sombra de mão sobre cortina de linho", "foco": "50% 50%" }
+    ],
+    "galeria": [
+      { "src": "https://images.unsplash.com/photo-1786521875230-406eca1e2b73", "alt": "Nicho em arco na parede clara", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1733685372441-c3a2a6e3222c", "alt": "Atendimento na sala de tratamento", "foco": "50% 40%" },
+      { "src": "https://images.unsplash.com/photo-1761718209708-9ab9ba1c7252", "alt": "Limpeza facial com espuma suave", "foco": "50% 40%" },
+      { "src": "https://images.unsplash.com/photo-1733145819142-16a6732ff704", "alt": "Especialista sorrindo durante o atendimento", "foco": "50% 35%" },
+      { "src": "https://images.unsplash.com/photo-1761718210055-e83ca7e2c9ad", "alt": "Aplicação de máscara facial", "foco": "50% 40%" },
+      { "src": "https://images.unsplash.com/photo-1731514771613-991a02407132", "alt": "Massagem facial relaxante", "foco": "50% 40%" }
+    ]
+  }
+}

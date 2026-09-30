@@ -1,0 +1,129 @@
+/* Estilo Acolhedor: ajustes sobre a base comum. Tudo escopado para não vazar para outros estilos. */
+
+html[data-estilo='acolhedor'] {
+  /* altura da barra compacta que aparece ao rolar */
+  --altura-cab: 64px;
+  --marca-gap: 6px;
+  --marca-sub-escala: 0.36;
+  --marca-sub-peso: 700;
+  --marca-sub-espaco: 0.32em;
+}
+
+@media (min-width: 1024px) {
+  html[data-estilo='acolhedor'] {
+    --altura-cab: 72px;
+  }
+}
+
+html[data-estilo='acolhedor'] body {
+  font-size: 16.5px;
+}
+
+/* Logo escrita: o trecho em destaque vira letra de mão */
+html[data-estilo='acolhedor'] .marca__nome em {
+  font-family: var(--fonte-assinatura);
+  font-size: 1.25em;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--destaque);
+}
+
+/* Títulos: Young Serif; a palavra de destaque vira letra de mão em cor */
+html[data-estilo='acolhedor'] .titulo {
+  font-weight: 400;
+  letter-spacing: -0.012em;
+  line-height: 1.08;
+}
+
+html[data-estilo='acolhedor'] .titulo em {
+  font-family: var(--fonte-assinatura);
+  font-size: 1.22em;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 0.8;
+  color: var(--destaque);
+}
+
+html[data-estilo='acolhedor'] .escuro .titulo em {
+  color: var(--destaque-escuro);
+}
+
+html[data-estilo='acolhedor'] .titulo--1 {
+  font-size: clamp(2.4rem, 3.7vw, 4rem);
+  line-height: 1.08;
+}
+
+@media (max-width: 1023px) {
+  html[data-estilo='acolhedor'] .titulo--1 {
+    font-size: clamp(2.5rem, 10vw, 3.5rem);
+  }
+}
+
+html[data-estilo='acolhedor'] .titulo--2 {
+  font-size: clamp(2.2rem, 3.8vw, 3.6rem);
+}
+
+/* Sobrelinha com um arquinho no lugar da linha */
+html[data-estilo='acolhedor'] .sobrelinha {
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+html[data-estilo='acolhedor'] .sobrelinha::before {
+  width: 10px;
+  height: 13px;
+  border-radius: 999px 999px 0 0;
+  background: var(--destaque);
+}
+
+html[data-estilo='acolhedor'] .texto {
+  font-size: clamp(16px, 1.1vw, 17.5px);
+  line-height: 1.7;
+}
+
+/* Botões em arco: topo arredondado, base quase reta */
+html[data-estilo='acolhedor'] .botao {
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 28px;
+  border-radius: 999px 999px 6px 6px;
+  background: var(--escuro);
+  border-color: var(--escuro);
+  color: var(--sobre-escuro);
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html[data-estilo='acolhedor'] .botao:hover {
+  background: var(--tinta);
+  border-color: var(--tinta);
+}
+
+html[data-estilo='acolhedor'] .botao svg {
+  width: 19px;
+  height: 19px;
+}
+
+html[data-estilo='acolhedor'] .botao--claro {
+  background: var(--sobre-escuro);
+  border-color: var(--sobre-escuro);
+  color: var(--escuro);
+}
+
+html[data-estilo='acolhedor'] .botao--claro:hover {
+  background: var(--fundo-alt);
+  border-color: var(--fundo-alt);
+  color: var(--escuro);
+}
+
+html[data-estilo='acolhedor'] .link-seta {
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  border-bottom-width: 1.5px;
+}

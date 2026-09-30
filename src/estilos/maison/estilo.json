@@ -1,0 +1,134 @@
+{
+  "id": "maison",
+  "nome": "Maison",
+  "descricao": "Elegante e discreto, com ar de revista. Para quem quer transmitir sofisticação sem exagero.",
+  "fontes": {
+    "url": "https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&family=Manrope:wght@300..600&family=Mrs+Saint+Delafield&display=swap",
+    "titulo": "'Bodoni Moda', 'Bodoni 72', Didot, Georgia, serif",
+    "texto": "'Manrope', 'Helvetica Neue', Arial, sans-serif",
+    "assinatura": "'Mrs Saint Delafield', 'Snell Roundhand', cursive"
+  },
+  "filtroFoto": "saturate(0.88) sepia(0.07) contrast(1.02)",
+  "paleta": {
+    "fundo": { "l": 0.972, "c": 0.007 },
+    "fundoAlt": { "l": 0.935, "c": 0.016 },
+    "tinta": { "l": 0.225, "c": 0.012 },
+    "tintaSuave": { "l": 0.47, "c": 0.018 },
+    "destaque": { "l": 0.64, "c": 0.07 },
+    "escuro": { "l": 0.195, "c": 0.013 },
+    "sobreEscuro": { "l": 0.935, "c": 0.016 },
+    "destaqueEscuro": { "l": 0.8, "c": 0.06 }
+  },
+  "cabecalho": "cabecalho/dividido",
+  "secoes": [
+    "hero/editorial",
+    "sobre/citacao",
+    "servicos/cardapio",
+    "processo/passos",
+    "galeria/mosaico",
+    "local/foto-endereco",
+    "final/convite"
+  ],
+  "rodape": "rodape/colunas",
+  "menu": [
+    { "rotulo": "A especialista", "ancora": "especialista" },
+    { "rotulo": "Tratamentos", "ancora": "tratamentos" },
+    { "rotulo": "O espaço", "ancora": "espaco" },
+    { "rotulo": "Contato", "ancora": "contato" }
+  ],
+  "textos": {
+    "hero": {
+      "sobrelinha": "{segmento} · {cidade}",
+      "titulo": "A beleza\nque não se\n*anuncia*.",
+      "texto": "Protocolos de estética avançada pensados para o seu rosto e para o seu tempo. Resultados que as pessoas percebem, sem saber exatamente o quê.",
+      "cta": "Agendar avaliação",
+      "ctaSecundario": "Ver tratamentos",
+      "fatos": ["Atendimento individual", "Protocolos personalizados", "Desde {desde}"]
+    },
+    "sobre": {
+      "sobrelinha": "A especialista",
+      "citacao": "Não acredito em rostos padronizados. Acredito em escuta, em técnica precisa e no *tempo* que cada pele pede.",
+      "paragrafos": [
+        "Sou {titulo} e atendo cada paciente pessoalmente, da primeira avaliação ao último retorno. Nenhum procedimento é delegado.",
+        "Antes de qualquer agulha ou ativo, conversamos sobre a sua rotina, o que você espera e o que não quer de jeito nenhum. É dessa conversa que nasce o plano, não de um catálogo."
+      ],
+      "numeros": [
+        { "valor": "{anos}", "rotulo": "anos de experiência" },
+        { "valor": "4 mil", "rotulo": "atendimentos realizados" },
+        { "valor": "9", "rotulo": "formações e especializações" }
+      ]
+    },
+    "servicos": {
+      "sobrelinha": "Tratamentos",
+      "titulo": "Um cardápio *curto*, feito com excelência.",
+      "texto": "Poucos protocolos, cada um dominado a fundo. Os valores são de referência: o plano final é definido na avaliação.",
+      "aPartirDe": "a partir de",
+      "agendar": "Agendar",
+      "nota": "Não sabe por onde começar?",
+      "notaLink": "Agende uma avaliação"
+    },
+    "processo": {
+      "sobrelinha": "A primeira visita",
+      "titulo": "Tudo começa com uma *conversa*.",
+      "texto": "Sem pressa e sem pacote pronto. A primeira visita existe para entender você antes de propor qualquer coisa.",
+      "passos": [
+        { "titulo": "Escuta", "texto": "Uma avaliação com tempo para entender sua pele, sua rotina e o resultado que você imagina." },
+        { "titulo": "Plano", "texto": "Você recebe um plano por escrito, com etapas, intervalos e valores claros. Sem surpresas." },
+        { "titulo": "Acompanhamento", "texto": "Retornos marcados e contato direto pelo WhatsApp entre uma sessão e outra." }
+      ]
+    },
+    "galeria": {
+      "sobrelinha": "O espaço",
+      "titulo": "Um lugar para *desacelerar*.",
+      "texto": "Atendimento com hora marcada e uma paciente por vez. Aqui, ninguém espera na recepção."
+    },
+    "local": {
+      "sobrelinha": "Onde estamos",
+      "titulo": "{bairro},\n*{cidade}*",
+      "endereco": "Endereço",
+      "horarios": "Horários",
+      "contato": "Contato",
+      "maps": "Google Maps",
+      "waze": "Waze"
+    },
+    "final": {
+      "sobrelinha": "Agendamento",
+      "titulo": "Vamos conversar\nsobre a *sua pele*?",
+      "texto": "O agendamento é feito pelo WhatsApp. Respondemos em horário comercial, normalmente em poucos minutos.",
+      "cta": "Agendar pelo WhatsApp"
+    },
+    "barra": {
+      "texto": "Agende sua avaliação",
+      "cta": "Conversar"
+    }
+  },
+  "fotos": {
+    "hero": {
+      "src": "https://images.unsplash.com/photo-1670201203116-26644750a726",
+      "alt": "Mulher de perfil com a mão no rosto e pele iluminada",
+      "foco": "50% 30%"
+    },
+    "especialista": {
+      "src": "https://images.unsplash.com/photo-1687293233752-ec42de2050db",
+      "alt": "Retrato da especialista no consultório",
+      "foco": "50% 30%"
+    },
+    "tratamentos": {
+      "src": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108",
+      "alt": "Frasco de sérum âmbar sobre pedestal de madeira",
+      "foco": "50% 55%"
+    },
+    "galeria": [
+      { "src": "https://images.unsplash.com/photo-1761330439316-72229b71798f", "alt": "Sala de espera com poltrona e vaso de cerâmica", "foco": "50% 60%" },
+      { "src": "https://images.unsplash.com/photo-1761718210089-ba3bb5ccb54f", "alt": "Tratamento facial em andamento", "foco": "50% 40%" },
+      { "src": "https://images.unsplash.com/photo-1567721913486-6585f069b332", "alt": "Potes de cosméticos sobre blocos de pedra", "foco": "50% 60%" },
+      { "src": "https://images.unsplash.com/photo-1706795033728-9232ef548a16", "alt": "Massagem facial durante o atendimento", "foco": "50% 35%" },
+      { "src": "https://images.unsplash.com/photo-1577746838851-816a43ca8733", "alt": "Perfil de mulher com pele iluminada", "foco": "50% 30%" }
+    ],
+    "local": {
+      "src": "https://images.unsplash.com/photo-1761095870661-c4ae15cac605",
+      "alt": "Ambiente claro e minimalista com expositores de produtos",
+      "foco": "50% 50%"
+    }
+  }
+}

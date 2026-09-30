@@ -1,0 +1,129 @@
+---
+// Sobre a especialista em forma de carta: saudação manuscrita, texto em primeira pessoa e
+// assinatura, num cartão que se sobrepõe ao retrato em arco.
+import Foto from '../comum/Foto.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.sobre;
+const { profissional } = site.cliente;
+---
+
+<section class="ct secao" id="sobre">
+  <div class="container ct__grade">
+    <Foto class="ct__foto" foto={site.fotos.especialista} forma="arco" sizes="(min-width: 900px) 36vw, 80vw" />
+
+    <article class="ct__carta" data-revelar>
+      <p class="sobrelinha">{t.sobrelinha}</p>
+      <p class="ct__saudacao">{t.saudacao}</p>
+      <h2 class="titulo titulo--2 ct__titulo" set:html={fmt(t.titulo)} />
+      <div class="ct__paragrafos">
+        {t.paragrafos.map((p) => <p class="texto">{p}</p>)}
+      </div>
+      <footer class="ct__assina">
+        <p class="ct__despedida">{t.despedida}</p>
+        <p class="ct__nome">{profissional.nome}</p>
+        <p class="ct__cred">{profissional.titulo} · {profissional.registro}</p>
+      </footer>
+    </article>
+  </div>
+</section>
+
+<style>
+  .ct {
+    background: var(--fundo-alt);
+  }
+
+  .ct__grade {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--colunas-gap);
+    align-items: center;
+  }
+
+  .ct__foto {
+    grid-column: 1 / span 5;
+    grid-row: 1;
+    aspect-ratio: 3 / 4;
+  }
+
+  .ct__carta {
+    grid-column: 5 / -1;
+    grid-row: 1;
+    position: relative;
+    z-index: 1;
+    padding: clamp(36px, 4.5vw, 72px);
+    border-radius: 6px;
+    background: var(--fundo);
+    box-shadow:
+      0 1px 0 var(--linha),
+      0 30px 60px -36px rgb(60 30 10 / 0.35);
+  }
+
+  .ct__saudacao {
+    margin-top: 22px;
+    font-family: var(--fonte-assinatura);
+    font-size: clamp(1.7rem, 2.4vw, 2.2rem);
+    line-height: 1.1;
+    color: var(--destaque);
+  }
+
+  .ct__titulo {
+    margin-top: 10px;
+  }
+
+  .ct__paragrafos {
+    display: grid;
+    gap: 16px;
+    margin-top: 26px;
+  }
+
+  .ct__paragrafos .texto {
+    max-width: 58ch;
+  }
+
+  .ct__assina {
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--linha-forte);
+  }
+
+  .ct__despedida {
+    font-size: 15px;
+    color: var(--tinta-suave);
+  }
+
+  .ct__nome {
+    margin-top: 2px;
+    font-family: var(--fonte-assinatura);
+    font-size: clamp(2.2rem, 3vw, 2.8rem);
+    line-height: 1.1;
+    color: var(--tinta);
+  }
+
+  .ct__cred {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--tinta-suave);
+  }
+
+  .ct__cred::first-letter {
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 899px) {
+    .ct__grade {
+      display: block;
+    }
+
+    .ct__foto {
+      width: 80%;
+      margin-inline: auto;
+    }
+
+    .ct__carta {
+      margin-top: -64px;
+      padding: 32px 24px;
+    }
+  }
+</style>

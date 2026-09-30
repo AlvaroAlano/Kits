@@ -1,0 +1,88 @@
+---
+// Barra fixa de agendamento no celular. Aparece depois do topo e some na chamada final.
+import Icone from './Icone.astro';
+
+const { site } = Astro.props;
+const t = site.textos.barra;
+---
+
+<a class="barra" href={site.links.agendar} target="_blank" rel="noopener" data-barra>
+  <span class="barra__texto">{t.texto}</span>
+  <span class="barra__acao"><Icone nome="whatsapp" /> {t.cta}</span>
+</a>
+
+<script>
+  const barra = document.querySelector('[data-barra]');
+  const topo = document.getElementById('topo');
+  const finais = [document.getElementById('agendar'), document.querySelector('body > footer')].filter(Boolean);
+  const finaisVisiveis = new Set();
+  let passouTopo = false;
+
+  const atualizar = () => barra.classList.toggle('barra--visivel', passouTopo && finaisVisiveis.size === 0);
+
+  if (topo) {
+    new IntersectionObserver(([e]) => {
+      passouTopo = !e.isIntersecting;
+      atualizar();
+    }).observe(topo);
+  }
+
+  const observadorFinal = new IntersectionObserver((entradas) => {
+    for (const e of entradas) e.isIntersecting ? finaisVisiveis.add(e.target) : finaisVisiveis.delete(e.target);
+    atualizar();
+  });
+  finais.forEach((el) => observadorFinal.observe(el));
+</script>
+
+<style>
+  .barra {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px var(--margem) calc(12px + env(safe-area-inset-bottom));
+    background: var(--tinta);
+    color: var(--fundo);
+    transform: translateY(110%);
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .barra--visivel {
+    transform: none;
+  }
+
+  .barra__texto {
+    font-family: var(--fonte-titulo);
+    font-size: 1.1rem;
+    font-style: italic;
+  }
+
+  .barra__acao {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--fundo-translucido);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .barra__acao :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+
+  @media (min-width: 1200px) {
+    .barra {
+      display: none;
+    }
+  }
+</style>

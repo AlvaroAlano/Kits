@@ -1,0 +1,125 @@
+/* Estilo Botânico: ajustes sobre a base comum. Tudo escopado para não vazar para outros estilos. */
+
+html[data-estilo='botanico'] {
+  /* no celular o cabeçalho não fica preso, então as âncoras não precisam de folga */
+  --altura-cab: 16px;
+  --marca-gap: 6px;
+  --marca-sub-escala: 0.4;
+  --marca-sub-peso: 500;
+  --marca-sub-espaco: 0.3em;
+}
+
+@media (min-width: 1024px) {
+  html[data-estilo='botanico'] {
+    --altura-cab: 88px;
+  }
+}
+
+html[data-estilo='botanico'] body {
+  font-size: 16.5px;
+}
+
+/* Seções claras seguidas: o respiro de uma basta */
+html[data-estilo='botanico'] .secao:not(.escuro) + .secao:not(.escuro) {
+  padding-top: 0;
+}
+
+/* Fraunces na versão "macia", mais arredondada */
+html[data-estilo='botanico'] .titulo,
+html[data-estilo='botanico'] .marca__nome {
+  font-variation-settings: 'SOFT' 100;
+}
+
+html[data-estilo='botanico'] .titulo {
+  font-weight: 340;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+html[data-estilo='botanico'] .titulo em {
+  font-weight: 320;
+  color: var(--destaque);
+}
+
+html[data-estilo='botanico'] .escuro .titulo em,
+html[data-estilo='botanico'] .hs .titulo em,
+html[data-estilo='botanico'] .ff .titulo em {
+  color: var(--destaque-escuro);
+}
+
+html[data-estilo='botanico'] .titulo--1 {
+  font-size: clamp(3rem, 7.4vw, 7.25rem);
+  line-height: 0.98;
+}
+
+html[data-estilo='botanico'] .titulo--2 {
+  font-size: clamp(2.4rem, 4.6vw, 4.4rem);
+}
+
+/* Sobrelinha em itálico, minúsculas, sem linha */
+html[data-estilo='botanico'] .sobrelinha {
+  gap: 0;
+  font-family: var(--fonte-titulo);
+  font-size: clamp(1.1rem, 1.4vw, 1.3rem);
+  font-style: italic;
+  font-weight: 380;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--destaque);
+  font-variation-settings: 'SOFT' 100;
+}
+
+html[data-estilo='botanico'] .sobrelinha::before {
+  display: none;
+}
+
+html[data-estilo='botanico'] .escuro .sobrelinha,
+html[data-estilo='botanico'] .hs .sobrelinha,
+html[data-estilo='botanico'] .ff .sobrelinha {
+  color: var(--destaque-escuro);
+}
+
+html[data-estilo='botanico'] .texto {
+  font-size: clamp(16px, 1.1vw, 17.5px);
+  line-height: 1.7;
+}
+
+/* Botões com cantos suaves (nem retos, nem cápsula) */
+html[data-estilo='botanico'] .botao {
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 24px;
+  border-radius: 14px;
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html[data-estilo='botanico'] .botao svg {
+  width: 18px;
+  height: 18px;
+}
+
+html[data-estilo='botanico'] .botao--claro {
+  background: var(--sobre-escuro);
+  border-color: var(--sobre-escuro);
+  color: var(--tinta);
+}
+
+html[data-estilo='botanico'] .botao--claro:hover {
+  background: var(--fundo-alt);
+  border-color: var(--fundo-alt);
+}
+
+html[data-estilo='botanico'] .botao--suave {
+  background: var(--fundo-alt);
+  border-color: var(--fundo-alt);
+  color: var(--tinta);
+}
+
+html[data-estilo='botanico'] .botao--suave:hover {
+  background: var(--tinta);
+  border-color: var(--tinta);
+  color: var(--fundo);
+}

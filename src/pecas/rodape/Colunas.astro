@@ -1,0 +1,123 @@
+---
+import Marca from '../comum/Marca.astro';
+
+const { site } = Astro.props;
+const { cliente, links, ano, textos } = site;
+const { endereco, contato, profissional, horarios = [] } = cliente;
+const t = textos.local;
+---
+
+<footer class="rodape escuro">
+  <div class="container">
+    <div class="rodape__grade">
+      <a href="#topo" class="rodape__marca" aria-label={`${cliente.nome}, voltar ao início`}>
+        <Marca site={site} clara />
+      </a>
+      <div>
+        <h3>{t.endereco}</h3>
+        <p>
+          {endereco.linha1}<br />
+          {endereco.bairro} · {endereco.cidade}/{endereco.uf}
+        </p>
+      </div>
+      <div>
+        <h3>{t.contato}</h3>
+        <p>
+          <a href={links.whats} target="_blank" rel="noopener">{contato.whatsappExibicao}</a>
+          {
+            links.instagram && (
+              <Fragment>
+                <br />
+                <a href={links.instagram} target="_blank" rel="noopener">@{contato.instagram}</a>
+              </Fragment>
+            )
+          }
+        </p>
+      </div>
+      <div>
+        <h3>{t.horarios}</h3>
+        <p>{horarios.map((h, i) => <Fragment>{i > 0 && <br />}{h}</Fragment>)}</p>
+      </div>
+    </div>
+
+    <div class="rodape__base">
+      <p>© {ano} {cliente.nome}. Responsável técnica: {profissional.nome} · {profissional.registro}</p>
+      <p>Site por Convcard</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .rodape {
+    padding-bottom: calc(32px + env(safe-area-inset-bottom));
+  }
+
+  .rodape__grade {
+    display: grid;
+    grid-template-columns: 1.5fr repeat(3, 1fr);
+    gap: 40px;
+    padding-top: 56px;
+    border-top: 1px solid var(--linha-escuro);
+  }
+
+  .rodape__marca {
+    --marca-tamanho: 1.5rem;
+    align-self: start;
+  }
+
+  .rodape__marca :global(.marca) {
+    align-items: flex-start;
+  }
+
+  .rodape h3 {
+    margin-bottom: 12px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--sobre-escuro-suave);
+  }
+
+  .rodape p {
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .rodape a:hover {
+    color: var(--destaque-escuro);
+  }
+
+  .rodape__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--linha-escuro);
+  }
+
+  .rodape__base p {
+    font-size: 12px;
+    color: var(--sobre-escuro-suave);
+  }
+
+  @media (max-width: 899px) {
+    .rodape__grade {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      padding-top: 48px;
+    }
+
+    .rodape__base {
+      margin-top: 48px;
+    }
+  }
+
+  /* espaço para a barra fixa de agendamento (celular e tablet) */
+  @media (max-width: 1199px) {
+    .rodape__base {
+      padding-bottom: 72px;
+    }
+  }
+</style>

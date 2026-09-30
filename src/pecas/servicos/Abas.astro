@@ -1,0 +1,344 @@
+---
+// Tratamentos em abas (uma por categoria). Sem JavaScript, todas as categorias aparecem uma
+// embaixo da outra; com JavaScript, só a aba escolhida. Cada linha abre o WhatsApp.
+import Icone from '../comum/Icone.astro';
+import { fmt, preco } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.servicos;
+---
+
+<section class="sa secao" id="tratamentos" data-abas>
+  <div class="container">
+    <div class="sa__topo">
+      <div>
+        <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+        <h2 class="titulo titulo--2 sa__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+      </div>
+      <p class="texto" data-revelar style="--atraso:180ms">{t.texto}</p>
+    </div>
+
+    <div class="sa__abas" role="tablist" aria-label={t.abasRotulo} data-revelar>
+      {
+        site.servicos.map((grupo, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`aba-${i}`}
+            aria-controls={`painel-${i}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            data-aba
+          >
+            {grupo.categoria}
+            <span>{grupo.itens.length}</span>
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      site.servicos.map((grupo, i) => (
+        <div
+          class:list={['sa__painel', i === 0 && 'sa__painel--ativo']}
+          role="tabpanel"
+          id={`painel-${i}`}
+          aria-labelledby={`aba-${i}`}
+          data-painel
+        >
+          <h3 class="sa__categoria">{grupo.categoria}</h3>
+          <ul>
+            {grupo.itens.map((item) => {
+              const p = preco(item);
+              return (
+                <li>
+                  <a class="sa__item" href={site.links.servico(item.nome)} target="_blank" rel="noopener">
+                    <span class="sa__nome">{item.nome}</span>
+                    <span class="sa__desc">{item.descricao}</span>
+                    <span class="sa__meta">
+                      {item.duracao && <span class="sa__tag">{item.duracao}</span>}
+                      <span class="sa__preco">
+                        {p.aPartirDe && <small>{t.aPartirDe} </small>}
+                        {p.valor}
+                      </span>
+                    </span>
+                    <span class="sa__ir" aria-hidden="true">
+                      <Icone nome="seta" />
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('[data-abas]').forEach((raiz) => {
+    const abas = [...raiz.querySelectorAll('[data-aba]')];
+    const paineis = [...raiz.querySelectorAll('[data-painel]')];
+
+    const ativar = (indice, focar = false) => {
+      abas.forEach((aba, i) => {
+        const ativa = i === indice;
+        aba.setAttribute('aria-selected', String(ativa));
+        aba.tabIndex = ativa ? 0 : -1;
+        paineis[i].classList.toggle('sa__painel--ativo', ativa);
+      });
+      if (focar) abas[indice].focus();
+      abas[indice].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    };
+
+    abas.forEach((aba, i) => {
+      aba.addEventListener('click', () => ativar(i));
+      aba.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') ativar((i + 1) % abas.length, true);
+        if (e.key === 'ArrowLeft') ativar((i - 1 + abas.length) % abas.length, true);
+      });
+    });
+  });
+</script>
+
+<style>
+  .sa {
+    background: var(--fundo-alt);
+  }
+
+  .sa__topo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px 64px;
+  }
+
+  .sa__titulo {
+    margin-top: 20px;
+  }
+
+  .sa__topo > .texto {
+    max-width: 38ch;
+  }
+
+  .sa__abas {
+    display: flex;
+    gap: 8px;
+    margin-top: clamp(40px, 5vw, 64px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .sa__abas::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sa__abas button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex: none;
+    height: 50px;
+    padding: 0 12px 0 22px;
+    border-radius: 999px;
+    background: var(--fundo);
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .sa__abas button span {
+    display: grid;
+    place-items: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--fundo-alt);
+    font-size: 13px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .sa__abas button[aria-selected='true'] {
+    background: var(--tinta);
+    color: var(--fundo);
+  }
+
+  .sa__abas button[aria-selected='true'] span {
+    background: var(--escuro);
+    color: var(--sobre-escuro);
+  }
+
+  /* com JS, só a aba ativa aparece; sem JS, aparecem todas com o nome da categoria */
+  .sa__painel {
+    margin-top: 20px;
+  }
+
+  /* :global porque a classe "js" fica no <html>, fora do escopo deste componente */
+  :global(.js) .sa__painel:not(.sa__painel--ativo) {
+    display: none;
+  }
+
+  .sa__categoria {
+    margin: 32px 0 12px;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  :global(.js) .sa__categoria {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .sa__painel--ativo li {
+      animation: sa-entrar 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+
+    :global(.js) .sa__painel--ativo li:nth-child(2) {
+      animation-delay: 0.05s;
+    }
+
+    :global(.js) .sa__painel--ativo li:nth-child(3) {
+      animation-delay: 0.1s;
+    }
+
+    :global(.js) .sa__painel--ativo li:nth-child(n + 4) {
+      animation-delay: 0.15s;
+    }
+  }
+
+  @keyframes sa-entrar {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+
+  .sa__painel li + li {
+    margin-top: 10px;
+  }
+
+  .sa__item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto 52px;
+    grid-template-areas:
+      'nome meta ir'
+      'desc meta ir';
+    column-gap: 28px;
+    row-gap: 6px;
+    align-items: center;
+    padding: 22px 16px 22px 26px;
+    border-radius: 20px;
+    background: var(--fundo);
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .sa__nome {
+    grid-area: nome;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(1.3rem, 1.9vw, 1.65rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .sa__desc {
+    grid-area: desc;
+    max-width: 60ch;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--tinta-suave);
+    transition: color 0.3s;
+  }
+
+  .sa__meta {
+    grid-area: meta;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .sa__tag {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--fundo-alt);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .sa__preco {
+    font-family: var(--fonte-titulo);
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  .sa__preco small {
+    font-family: var(--fonte-texto);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .sa__ir {
+    grid-area: ir;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--escuro);
+    color: var(--sobre-escuro);
+    transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  @media (hover: hover) {
+    .sa__item:hover {
+      background: var(--tinta);
+      color: var(--fundo);
+    }
+
+    .sa__item:hover .sa__desc {
+      color: color-mix(in srgb, var(--fundo) 75%, transparent);
+    }
+
+    .sa__item:hover .sa__tag {
+      background: color-mix(in srgb, var(--fundo) 14%, transparent);
+    }
+
+    .sa__item:hover .sa__ir {
+      transform: rotate(-45deg);
+    }
+  }
+
+  @media (max-width: 699px) {
+    .sa__item {
+      grid-template-columns: minmax(0, 1fr) 46px;
+      grid-template-areas:
+        'nome ir'
+        'desc desc'
+        'meta meta';
+      row-gap: 10px;
+      padding: 20px 14px 20px 20px;
+    }
+
+    .sa__ir {
+      width: 46px;
+      height: 46px;
+    }
+
+    .sa__meta {
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+  }
+</style>

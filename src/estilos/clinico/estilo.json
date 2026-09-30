@@ -1,0 +1,144 @@
+{
+  "id": "clinico",
+  "nome": "Clínico",
+  "descricao": "Moderno, claro e técnico. Para quem quer transmitir segurança, método e tecnologia.",
+  "fontes": {
+    "url": "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300..600&family=IBM+Plex+Mono:wght@400;500&display=swap",
+    "titulo": "'Instrument Serif', Georgia, serif",
+    "texto": "'Inter Tight', 'Segoe UI', system-ui, sans-serif",
+    "rotulo": "'IBM Plex Mono', ui-monospace, Consolas, monospace"
+  },
+  "filtroFoto": "saturate(0.94) contrast(1.02)",
+  "paleta": {
+    "fundo": { "l": 0.987, "c": 0.002 },
+    "fundoAlt": { "l": 0.957, "c": 0.007 },
+    "tinta": { "l": 0.245, "c": 0.012 },
+    "tintaSuave": { "l": 0.5, "c": 0.014 },
+    "destaque": { "l": 0.6, "c": 0.09 },
+    "escuro": { "l": 0.255, "c": 0.013 },
+    "sobreEscuro": { "l": 0.965, "c": 0.006 },
+    "destaqueEscuro": { "l": 0.8, "c": 0.075 }
+  },
+  "cabecalho": "cabecalho/capsula",
+  "secoes": [
+    "hero/centralizado",
+    "dados/faixa",
+    "sobre/perfil",
+    "servicos/acordeao",
+    "galeria/carrossel",
+    "faq/colunas",
+    "local/mapa-cartao",
+    "final/faixa"
+  ],
+  "rodape": "rodape/linha",
+  "flutuante": "flutuante/botao",
+  "menu": [
+    { "rotulo": "Especialista", "ancora": "especialista" },
+    { "rotulo": "Tratamentos", "ancora": "tratamentos" },
+    { "rotulo": "Clínica", "ancora": "espaco" },
+    { "rotulo": "Dúvidas", "ancora": "duvidas" },
+    { "rotulo": "Contato", "ancora": "contato" }
+  ],
+  "textos": {
+    "hero": {
+      "sobrelinha": "{segmento} · {cidade}",
+      "titulo": "Pele bonita é\nresultado de *método*.",
+      "texto": "Diagnóstico cuidadoso, protocolos com respaldo científico e acompanhamento de perto, do primeiro dia ao resultado.",
+      "cta": "Agendar avaliação",
+      "ctaSecundario": "Ver tratamentos"
+    },
+    "dados": {
+      "itens": [
+        { "titulo": "Diagnóstico antes do tratamento", "texto": "Toda avaliação inclui análise da pele, histórico e rotina." },
+        { "titulo": "Protocolos com evidência", "texto": "Só indicamos técnicas e ativos com respaldo científico." },
+        { "titulo": "Tecnologia com critério", "texto": "Cada equipamento é escolhido e ajustado para o seu tipo de pele." },
+        { "titulo": "Evolução registrada", "texto": "Fotos padronizadas a cada etapa para comparar o antes e o agora." }
+      ]
+    },
+    "sobre": {
+      "sobrelinha": "A especialista",
+      "titulo": "Técnica, estudo\ne *escuta*.",
+      "paragrafos": [
+        "Sou {titulo} desde {desde} e acredito que um bom resultado começa no diagnóstico. Antes de indicar qualquer procedimento, avalio a pele, o histórico e a rotina de cada paciente.",
+        "Sigo estudando todos os anos para oferecer só técnicas seguras e com respaldo científico, sempre com a naturalidade como regra."
+      ],
+      "formacao": "Formação"
+    },
+    "servicos": {
+      "sobrelinha": "Tratamentos",
+      "titulo": "Cada tratamento,\n*explicado*.",
+      "texto": "Toque em um tratamento para ver indicação, número de sessões e investimento. O plano final é definido na avaliação.",
+      "aPartirDe": "a partir de",
+      "indicado": "Indicado para",
+      "sessoes": "Sessões",
+      "duracao": "Duração",
+      "investimento": "Investimento",
+      "agendar": "Agendar este tratamento"
+    },
+    "galeria": {
+      "sobrelinha": "Por dentro da clínica",
+      "titulo": "Um espaço claro,\ncalmo e *preciso*.",
+      "anterior": "Foto anterior",
+      "proxima": "Próxima foto"
+    },
+    "faq": {
+      "sobrelinha": "Dúvidas frequentes",
+      "titulo": "Antes de\n*agendar*.",
+      "texto": "Não encontrou a sua dúvida? Pergunte pelo WhatsApp, a resposta costuma ser rápida.",
+      "cta": "Perguntar no WhatsApp",
+      "itens": [
+        { "pergunta": "A avaliação tem custo?", "resposta": "A primeira avaliação tem valor de consulta, que é abatido se você iniciar um tratamento em até 30 dias." },
+        { "pergunta": "Quanto tempo duram os resultados?", "resposta": "Depende do tratamento e da sua pele. Na avaliação você recebe a duração estimada e a frequência de manutenção de cada protocolo." },
+        { "pergunta": "Vou precisar me afastar do trabalho?", "resposta": "A maioria dos procedimentos permite voltar à rotina no mesmo dia. Quando houver cuidados especiais, você recebe tudo por escrito." },
+        { "pergunta": "Os procedimentos doem?", "resposta": "Usamos anestésico tópico sempre que indicado. A maioria das pacientes descreve apenas um leve desconforto." },
+        { "pergunta": "Quais as formas de pagamento?", "resposta": "Pix e cartões de débito e crédito, com parcelamento nos protocolos com mais de uma sessão." },
+        { "pergunta": "Como faço para agendar?", "resposta": "Pelo WhatsApp. Respondemos em horário comercial e já sugerimos os horários disponíveis." }
+      ]
+    },
+    "local": {
+      "sobrelinha": "Onde estamos",
+      "titulo": "{bairro},\n*{cidade}*",
+      "endereco": "Endereço",
+      "horarios": "Horários",
+      "contato": "Contato",
+      "maps": "Abrir no Google Maps",
+      "waze": "Ir com Waze",
+      "carregarMapa": "Mostrar mapa",
+      "avisoMapa": "O mapa do Google só carrega quando você pedir."
+    },
+    "final": {
+      "selo": "Fale direto com a {primeiroNome}",
+      "titulo": "Vamos montar o\n*seu plano*?",
+      "texto": "O agendamento é feito pelo WhatsApp, com resposta em horário comercial.",
+      "cta": "Agendar pelo WhatsApp"
+    },
+    "flutuante": {
+      "texto": "Agendar"
+    }
+  },
+  "fotos": {
+    "hero": {
+      "src": "https://images.unsplash.com/photo-1707544738456-a5f930510139",
+      "alt": "Retrato de mulher com pele saudável em fundo claro",
+      "foco": "50% 22%"
+    },
+    "heroApoio": [
+      { "src": "https://images.unsplash.com/photo-1748543668646-e81cda0890f3", "alt": "Texturas de séruns em placas circulares", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1713085085470-fba013d67e65", "alt": "Procedimento facial com aparelho", "foco": "55% 40%" }
+    ],
+    "especialista": {
+      "src": "https://images.unsplash.com/photo-1706565029539-d09af5896340",
+      "alt": "Retrato da especialista de jaleco",
+      "foco": "50% 18%"
+    },
+    "galeria": [
+      { "src": "https://images.unsplash.com/photo-1735448214447-4b13bbad161d", "alt": "Sala de atendimento clara e minimalista", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1552693673-1bf958298935", "alt": "Limpeza de pele com instrumentos esterilizados", "foco": "55% 45%" },
+      { "src": "https://images.unsplash.com/photo-1787478187203-7ecefb240b6c", "alt": "Séruns usados nos protocolos faciais", "foco": "55% 50%" },
+      { "src": "https://images.unsplash.com/photo-1598300195998-364bf445842c", "alt": "Aparelho de tecnologia estética em uso", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1768836180171-24c727a594b8", "alt": "Corredor de acesso às salas", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1561228987-8e7379dde477", "alt": "Pele hidratada e iluminada", "foco": "50% 40%" },
+      { "src": "https://images.unsplash.com/photo-1552256031-811fa8f0a7b1", "alt": "Aplicação de ativo com conta-gotas", "foco": "50% 45%" }
+    ]
+  }
+}

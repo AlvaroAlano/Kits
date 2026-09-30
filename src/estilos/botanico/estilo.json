@@ -1,0 +1,140 @@
+{
+  "id": "botanico",
+  "nome": "Botânico",
+  "descricao": "Natural e acolhedor, com formas orgânicas. Para quem quer transmitir leveza, cuidado e proximidade.",
+  "fontes": {
+    "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,0..100;1,9..144,300..600,0..100&family=Figtree:wght@400..600&display=swap",
+    "titulo": "'Fraunces', Georgia, serif",
+    "texto": "'Figtree', 'Segoe UI', system-ui, sans-serif"
+  },
+  "filtroFoto": "saturate(0.9) sepia(0.06)",
+  "paleta": {
+    "fundo": { "l": 0.967, "c": 0.017, "h": 85 },
+    "fundoAlt": { "l": 0.928, "c": 0.028, "h": 85 },
+    "tinta": { "l": 0.3, "c": 0.035, "h": 140 },
+    "tintaSuave": { "l": 0.47, "c": 0.03, "h": 135 },
+    "destaque": { "l": 0.6, "c": 0.085 },
+    "escuro": { "l": 0.36, "c": 0.045, "h": 140 },
+    "sobreEscuro": { "l": 0.955, "c": 0.02, "h": 85 },
+    "destaqueEscuro": { "l": 0.82, "c": 0.07 }
+  },
+  "cabecalho": "cabecalho/aberto",
+  "secoes": [
+    "hero/sangrado",
+    "manifesto/frase",
+    "sobre/organico",
+    "servicos/cards",
+    "galeria/colunas",
+    "local/horarios",
+    "final/foto"
+  ],
+  "rodape": "rodape/assinatura",
+  "flutuante": "flutuante/dock",
+  "menu": [
+    { "rotulo": "Sobre", "ancora": "sobre" },
+    { "rotulo": "Tratamentos", "ancora": "tratamentos" },
+    { "rotulo": "Espaço", "ancora": "espaco" },
+    { "rotulo": "Horários", "ancora": "contato" }
+  ],
+  "textos": {
+    "hero": {
+      "sobrelinha": "{segmento} em {cidade}",
+      "titulo": "Pele saudável,\nbeleza *natural*.",
+      "texto": "Estética avançada com ativos bem escolhidos, mãos treinadas e muito respeito pelo tempo da sua pele.",
+      "cta": "Agendar avaliação",
+      "ctaSecundario": "Conhecer os tratamentos"
+    },
+    "manifesto": {
+      "texto": "Cuidar da pele é como cuidar de um jardim: *constância*, bons ingredientes e respeito ao tempo de cada estação.",
+      "assinatura": "{profissional}"
+    },
+    "sobre": {
+      "sobrelinha": "quem cuida de você",
+      "titulo": "Oi, eu sou\na *{primeiroNome}*.",
+      "paragrafos": [
+        "Sou {titulo} e há {anos} anos ajudo mulheres a cuidarem da pele de um jeito mais leve, sem exageros e sem fórmulas prontas.",
+        "Meu trabalho começa pela saúde da pele. Quando ela está equilibrada, o resultado aparece e dura."
+      ],
+      "selo": "{segmento} · desde {desde} · ",
+      "principios": [
+        { "icone": "folha", "titulo": "Ativos de qualidade", "texto": "Produtos escolhidos pela composição, não pela moda." },
+        { "icone": "gota", "titulo": "Naturalidade sempre", "texto": "Resultados que realçam, sem mudar quem você é." },
+        { "icone": "sol", "titulo": "Pele saudável primeiro", "texto": "Cuidar da barreira da pele antes de qualquer procedimento." }
+      ]
+    },
+    "servicos": {
+      "sobrelinha": "tratamentos",
+      "titulo": "Escolha por onde\n*começar*.",
+      "texto": "Os valores são de referência. Na avaliação, montamos juntas o plano ideal para a sua pele.",
+      "tratamentos": "tratamentos",
+      "indicado": "Indicado para",
+      "aPartirDe": "a partir de"
+    },
+    "galeria": {
+      "sobrelinha": "o espaço",
+      "titulo": "Um cantinho verde\nno meio da *cidade*."
+    },
+    "local": {
+      "sobrelinha": "venha nos visitar",
+      "titulo": "{bairro},\n*{cidade}*",
+      "endereco": "Endereço",
+      "horarios": "Horários",
+      "contatoRodape": "Contato",
+      "navegar": "Navegar",
+      "maps": "Como chegar",
+      "waze": "Waze",
+      "whats": "WhatsApp",
+      "aberto": "Aberto agora",
+      "fechado": "Fechado agora",
+      "fechadoDia": "Fechado",
+      "ate": "até",
+      "abre": "abre",
+      "hoje": "hoje",
+      "amanha": "amanhã",
+      "as": "às"
+    },
+    "final": {
+      "sobrelinha": "vamos conversar?",
+      "titulo": "Que tal começar\npor uma *avaliação*?",
+      "texto": "Me chama no WhatsApp. Eu mesma respondo e já te passo os horários livres.",
+      "cta": "Agendar pelo WhatsApp"
+    },
+    "dock": {
+      "menu": "Menu",
+      "agendar": "Agendar",
+      "fechar": "Fechar"
+    }
+  },
+  "fotos": {
+    "hero": {
+      "src": "https://images.unsplash.com/photo-1670470076011-cd2f6e03ca40",
+      "alt": "Mulher em um jardim cercada de folhagem",
+      "foco": "62% 40%",
+      "focoCelular": "38% 30%"
+    },
+    "especialista": {
+      "src": "https://images.unsplash.com/photo-1720121515433-bfd02e762992",
+      "alt": "A especialista arrumando flores no espaço",
+      "foco": "50% 30%"
+    },
+    "categorias": [
+      { "src": "https://images.unsplash.com/photo-1552046122-03184de85e08", "alt": "Cuidados faciais com ativos naturais", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1767884022378-7909a74a15ab", "alt": "Rosto de olhos fechados sob a luz do sol", "foco": "50% 40%" },
+      { "src": "https://images.unsplash.com/photo-1790244561091-65b7a1f4be87", "alt": "Massagem com instrumento de madeira", "foco": "50% 55%" }
+    ],
+    "galeria": [
+      { "src": "https://images.unsplash.com/photo-1680676960765-f18115aa7390", "alt": "Recepção clara com plantas", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1600172454284-934feca24ccd", "alt": "Sombra de folhas na parede", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1672015521020-ab4f86d5cc00", "alt": "Óleos e cremes sobre bandeja", "foco": "50% 60%" },
+      { "src": "https://images.unsplash.com/photo-1752769041878-f24e37fd6aea", "alt": "Lavabo iluminado com plantas", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1693578538512-fc66f318c833", "alt": "Sala de atendimento com poltronas", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1691391611977-198acc8d43b2", "alt": "Ervas frescas em tigela de madeira", "foco": "50% 50%" },
+      { "src": "https://images.unsplash.com/photo-1592655099313-6f4d6465e5bd", "alt": "Folhagem sobre tecido de linho", "foco": "50% 50%" }
+    ],
+    "final": {
+      "src": "https://images.unsplash.com/photo-1773924093206-9a433a14bb44",
+      "alt": "Sala de descanso com luz natural",
+      "foco": "50% 50%"
+    }
+  }
+}

@@ -1,0 +1,237 @@
+---
+// Galeria em carrossel de arrastar (rolagem nativa com encaixe), setas no computador,
+// contador e barra de progresso. Seção escura.
+import Foto from '../comum/Foto.astro';
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.galeria;
+const fotos = site.fotos.galeria;
+const total = String(fotos.length).padStart(2, '0');
+---
+
+<section class="car secao escuro" id="espaco" data-carrossel>
+  <div class="container car__topo">
+    <div>
+      <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+      <h2 class="titulo titulo--2 car__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+    </div>
+    <div class="car__controles" data-revelar style="--atraso:200ms">
+      <span class="car__contador"><span data-atual>01</span> / {total}</span>
+      <button type="button" class="car__seta car__seta--voltar" aria-label={t.anterior} data-anterior><Icone nome="seta" /></button>
+      <button type="button" class="car__seta" aria-label={t.proxima} data-proxima><Icone nome="seta" /></button>
+    </div>
+  </div>
+
+  <ul class="car__trilho" data-trilho data-revelar style="--atraso:250ms">
+    {
+      fotos.map((foto, i) => (
+        <li class="car__slide">
+          <Foto class="car__foto" foto={foto} forma="arredondada" sizes="(min-width: 900px) 30vw, 78vw" />
+          <p class="car__legenda">
+            <span>{String(i + 1).padStart(2, '0')}</span> {foto.alt}
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="container">
+    <div class="car__progresso" aria-hidden="true"><span data-progresso></span></div>
+  </div>
+</section>
+
+<script>
+  const semMovimento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll('[data-carrossel]').forEach((raiz) => {
+    const trilho = raiz.querySelector('[data-trilho]');
+    const slides = [...trilho.children];
+    const atual = raiz.querySelector('[data-atual]');
+    const progresso = raiz.querySelector('[data-progresso]');
+    const voltar = raiz.querySelector('[data-anterior]');
+    const avancar = raiz.querySelector('[data-proxima]');
+
+    const passo = () => slides[1].offsetLeft - slides[0].offsetLeft;
+    const mover = (sentido) =>
+      trilho.scrollBy({ left: sentido * passo(), behavior: semMovimento ? 'auto' : 'smooth' });
+
+    voltar.addEventListener('click', () => mover(-1));
+    avancar.addEventListener('click', () => mover(1));
+
+    let agendado = false;
+    const atualizar = () => {
+      agendado = false;
+      const maximo = trilho.scrollWidth - trilho.clientWidth;
+      const fracao = maximo > 0 ? trilho.scrollLeft / maximo : 0;
+      const visivel = trilho.clientWidth / trilho.scrollWidth;
+      progresso.style.width = `${visivel * 100}%`;
+      progresso.style.transform = `translateX(${(fracao * (1 - visivel) * 100) / visivel}%)`;
+      const indice = fracao > 0.995 ? slides.length : Math.round(trilho.scrollLeft / passo()) + 1;
+      atual.textContent = String(Math.min(indice, slides.length)).padStart(2, '0');
+      voltar.disabled = trilho.scrollLeft < 4;
+      avancar.disabled = trilho.scrollLeft > maximo - 4;
+    };
+
+    trilho.addEventListener(
+      'scroll',
+      () => {
+        if (!agendado) {
+          agendado = true;
+          requestAnimationFrame(atualizar);
+        }
+      },
+      { passive: true },
+    );
+    window.addEventListener('resize', atualizar);
+    atualizar();
+  });
+</script>
+
+<style>
+  .car__topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 32px;
+  }
+
+  .car__titulo {
+    margin-top: 24px;
+  }
+
+  .car__controles {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: none;
+  }
+
+  .car__contador {
+    margin-right: 14px;
+    font-family: var(--fonte-rotulo);
+    font-size: 13px;
+    color: var(--sobre-escuro-suave);
+  }
+
+  .car__contador [data-atual] {
+    color: var(--sobre-escuro);
+  }
+
+  .car__seta {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--linha-escuro);
+    border-radius: 50%;
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      opacity 0.3s;
+  }
+
+  .car__seta:hover:not(:disabled) {
+    background: var(--sobre-escuro);
+    color: var(--escuro);
+  }
+
+  .car__seta:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .car__seta--voltar :global(svg) {
+    transform: rotate(180deg);
+  }
+
+  /* O trilho ocupa a largura toda, mas começa alinhado com o conteúdo */
+  .car__trilho {
+    --inicio: max(var(--margem), calc((100% - var(--largura)) / 2 + var(--margem)));
+    display: flex;
+    gap: 16px;
+    margin-top: clamp(40px, 5vw, 64px);
+    padding-inline: var(--inicio);
+    scroll-padding-inline: var(--inicio);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .car__trilho::-webkit-scrollbar {
+    display: none;
+  }
+
+  .car__slide {
+    flex: none;
+    width: clamp(280px, 29vw, 420px);
+    scroll-snap-align: start;
+  }
+
+  .car__foto {
+    --raio-foto: 24px;
+    aspect-ratio: 4 / 5;
+  }
+
+  .car__legenda {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--sobre-escuro-suave);
+  }
+
+  .car__legenda span {
+    font-family: var(--fonte-rotulo);
+    font-size: 12px;
+    color: var(--destaque-escuro);
+    padding-top: 1px;
+  }
+
+  .car__progresso {
+    position: relative;
+    height: 2px;
+    margin-top: 40px;
+    border-radius: 2px;
+    background: var(--linha-escuro);
+    overflow: hidden;
+  }
+
+  .car__progresso span {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 30%;
+    border-radius: 2px;
+    background: var(--sobre-escuro);
+    transition: transform 0.15s linear;
+  }
+
+  @media (max-width: 899px) {
+    .car__topo {
+      display: block;
+    }
+
+    .car__controles {
+      margin-top: 24px;
+    }
+
+    .car__seta {
+      display: none;
+    }
+
+    .car__trilho {
+      gap: 12px;
+    }
+
+    .car__slide {
+      width: 78vw;
+    }
+
+    .car__progresso {
+      margin-top: 32px;
+    }
+  }
+</style>

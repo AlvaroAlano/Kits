@@ -1,0 +1,102 @@
+---
+// Galeria em colunas (estilo mural): fotos de alturas diferentes encaixadas umas nas outras.
+import Foto from '../comum/Foto.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.galeria;
+// Alturas escolhidas para as 3 colunas terminarem juntas com 7 fotos (2 + 2 + 3)
+const PROPORCOES = ['4 / 5', '4 / 5', '5 / 7', '10 / 11', '5 / 4', '10 / 9', '5 / 4'];
+---
+
+<section class="gc secao" id="espaco">
+  <div class="container">
+    <div class="gc__topo">
+      <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+      <h2 class="titulo titulo--2 gc__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+      {t.texto && <p class="texto gc__texto" data-revelar style="--atraso:180ms">{t.texto}</p>}
+    </div>
+
+    <ul class="gc__mural">
+      {
+        site.fotos.galeria.map((foto, i) => (
+          <li data-revelar style={`--atraso:${(i % 3) * 90}ms`}>
+            <Foto
+              class="gc__foto"
+              foto={foto}
+              forma={i % 3 === 1 ? 'organica' : 'arredondada'}
+              sizes="(min-width: 900px) 32vw, 50vw"
+            />
+            <span class="gc__proporcao" style={`--proporcao:${PROPORCOES[i % PROPORCOES.length]}`} />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .gc__topo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .gc__titulo {
+    margin-top: 16px;
+  }
+
+  .gc__texto {
+    margin-top: 18px;
+  }
+
+  .gc__mural {
+    columns: 3;
+    column-gap: 16px;
+    margin-top: clamp(48px, 6vw, 80px);
+  }
+
+  .gc__mural li {
+    position: relative;
+    break-inside: avoid;
+    margin-bottom: 16px;
+  }
+
+  /* a proporção de cada foto vem de um elemento irmão invisível, para variar a altura */
+  .gc__proporcao {
+    display: block;
+    aspect-ratio: var(--proporcao);
+  }
+
+  .gc__foto {
+    --raio-foto: 28px;
+    position: absolute;
+    inset: 0;
+  }
+
+  .gc__foto :global(img) {
+    transition: transform 1.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  @media (hover: hover) {
+    .gc__mural li:hover .gc__foto :global(img) {
+      transform: scale(1.04);
+    }
+  }
+
+  @media (max-width: 899px) {
+    .gc__mural {
+      columns: 2;
+      column-gap: 10px;
+    }
+
+    .gc__mural li {
+      margin-bottom: 10px;
+    }
+
+    .gc__foto {
+      --raio-foto: 20px;
+    }
+  }
+</style>

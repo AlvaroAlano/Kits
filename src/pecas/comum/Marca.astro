@@ -1,0 +1,62 @@
+---
+// Logo da cliente ou, se ela não tiver uma boa, a logo escrita com a fonte do estilo.
+import { fmt, comBase } from '../../lib/texto.js';
+
+const { site, clara = false, class: classe } = Astro.props;
+const { marca, nome } = site.cliente;
+const logo = clara ? marca.logoClara ?? marca.logo : marca.logo;
+---
+
+{
+  logo ? (
+    <img class:list={['marca', 'marca--imagem', classe]} src={comBase(logo)} alt={nome} />
+  ) : (
+    <span class:list={['marca', clara && 'marca--clara', classe]}>
+      <span class="marca__nome" set:html={fmt(marca.linha1)} />
+      {marca.linha2 && <span class="marca__sub">{marca.linha2}</span>}
+    </span>
+  )
+}
+
+<style>
+  /* Cada estilo ajusta a logo escrita pelas variáveis --marca-* */
+  .marca {
+    display: inline-flex;
+    flex-direction: var(--marca-direcao, column);
+    align-items: var(--marca-alinhamento, center);
+    gap: var(--marca-gap, 5px);
+    line-height: 1;
+    color: var(--marca-cor, var(--tinta));
+    white-space: nowrap;
+  }
+
+  .marca--clara {
+    color: var(--marca-cor, var(--sobre-escuro));
+  }
+
+  .marca__nome {
+    font-family: var(--fonte-titulo);
+    font-size: var(--marca-tamanho, 1.4rem);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  .marca__nome :global(em) {
+    font-style: italic;
+  }
+
+  .marca__sub {
+    font-family: var(--marca-sub-fonte, inherit);
+    font-size: calc(var(--marca-tamanho, 1.4rem) * var(--marca-sub-escala, 0.36));
+    font-weight: var(--marca-sub-peso, 600);
+    letter-spacing: var(--marca-sub-espaco, 0.44em);
+    text-transform: var(--marca-sub-caixa, uppercase);
+    padding-left: var(--marca-sub-recuo, 0.44em);
+    opacity: 0.7;
+  }
+
+  .marca--imagem {
+    height: calc(var(--marca-tamanho, 1.4rem) * 1.9);
+    width: auto;
+  }
+</style>

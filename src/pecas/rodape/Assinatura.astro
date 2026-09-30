@@ -1,0 +1,142 @@
+---
+// Rodapé escuro com as informações em colunas e o nome da clínica gigante, de ponta a ponta,
+// como uma assinatura. O tamanho da letra se ajusta ao comprimento do nome.
+import { fmt, semMarcas } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const { cliente, links, ano, estilo, textos } = site;
+const { endereco, contato, profissional, horarios = [], marca } = cliente;
+const t = textos.local;
+
+const nome = semMarcas(marca.linha1);
+const letrasLinha = nome.length;
+const letrasPalavra = Math.max(...nome.split(/\s+/).map((p) => p.length));
+---
+
+<footer class="ra escuro" style={`--letras-linha:${letrasLinha};--letras-palavra:${letrasPalavra}`}>
+  <div class="container">
+    <div class="ra__colunas">
+      <div>
+        <h3>{t.endereco}</h3>
+        <p>
+          {endereco.linha1}<br />
+          {endereco.bairro} · {endereco.cidade}/{endereco.uf}
+        </p>
+      </div>
+      <div>
+        <h3>{t.horarios}</h3>
+        <p>{horarios.map((h, i) => <Fragment>{i > 0 && <br />}{h}</Fragment>)}</p>
+      </div>
+      <div>
+        <h3>{t.contatoRodape}</h3>
+        <p>
+          <a href={links.whats} target="_blank" rel="noopener">{contato.whatsappExibicao}</a>
+          {
+            links.instagram && (
+              <Fragment>
+                <br />
+                <a href={links.instagram} target="_blank" rel="noopener">@{contato.instagram}</a>
+              </Fragment>
+            )
+          }
+        </p>
+      </div>
+      <nav aria-label="Rodapé">
+        <h3>{t.navegar}</h3>
+        <ul>
+          {estilo.menu.map((item) => <li><a href={`#${item.ancora}`}>{item.rotulo}</a></li>)}
+        </ul>
+      </nav>
+    </div>
+
+    <p class="ra__nome" aria-hidden="true" set:html={fmt(marca.linha1)} />
+
+    <div class="ra__base">
+      <p>© {ano} {cliente.nome} · Responsável técnica: {profissional.nome} · {profissional.registro}</p>
+      <p>Site por Convcard</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .ra {
+    padding-top: clamp(72px, 8vw, 112px);
+    container-type: inline-size;
+  }
+
+  .ra__colunas {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 32px var(--colunas-gap);
+  }
+
+  .ra h3 {
+    margin-bottom: 12px;
+    font-family: var(--fonte-titulo);
+    font-size: 1.1rem;
+    font-style: italic;
+    font-weight: 380;
+    color: var(--destaque-escuro);
+  }
+
+  .ra__colunas p,
+  .ra__colunas li {
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  .ra a:hover {
+    color: var(--destaque-escuro);
+  }
+
+  .ra__nome {
+    margin-top: clamp(56px, 7vw, 96px);
+    font-family: var(--fonte-titulo);
+    /* cabe numa linha só: a letra encolhe conforme o nome cresce
+       (largura útil ÷ nº de letras ÷ largura média de uma letra da Fraunces, com folga) */
+    font-size: min(13rem, calc((100cqi - 2 * var(--margem)) / (var(--letras-linha) * 0.42)));
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--sobre-escuro) 92%, transparent);
+  }
+
+  .ra__nome :global(em) {
+    color: var(--destaque-escuro);
+  }
+
+  .ra__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 32px;
+    margin-top: 32px;
+    padding-block: 24px calc(28px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--linha-escuro);
+  }
+
+  .ra__base p {
+    font-size: 13px;
+    color: var(--sobre-escuro-suave);
+  }
+
+  @media (max-width: 899px) {
+    .ra__colunas {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* no celular o nome quebra por palavra e cada palavra ocupa a largura */
+    .ra__nome {
+      font-size: calc((100cqi - 2 * var(--margem)) / (var(--letras-palavra) * 0.46));
+      white-space: normal;
+    }
+  }
+
+  /* espaço para a barra de navegação de baixo */
+  @media (max-width: 1023px) {
+    .ra__base {
+      padding-bottom: calc(100px + env(safe-area-inset-bottom));
+    }
+  }
+</style>

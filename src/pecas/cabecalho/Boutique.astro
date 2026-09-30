@@ -1,0 +1,376 @@
+---
+// Cabeçalho "boutique": faixa de informações, marca centralizada e menu logo abaixo, rolando
+// junto com a página. Depois do topo, desce uma barra compacta fixa. No celular, o menu abre
+// num círculo que se expande a partir do botão.
+import Marca from '../comum/Marca.astro';
+import Icone from '../comum/Icone.astro';
+
+const { site } = Astro.props;
+const { estilo, cliente, links } = site;
+const t = site.textos.cabecalho;
+const { endereco, horarios = [] } = cliente;
+---
+
+<header class="bq">
+  <div class="bq__info">
+    <div class="container bq__info-linha">
+      <span><Icone nome="mapa" /> {endereco.linha1.split(' · ')[0]} · {endereco.bairro}, {endereco.cidade}</span>
+      <span>
+        {horarios[0]}
+        {links.instagram && <a href={links.instagram} target="_blank" rel="noopener" aria-label="Instagram"><Icone nome="instagram" /></a>}
+      </span>
+    </div>
+  </div>
+
+  <div class="container bq__principal">
+    <a href="#topo" class="bq__marca" aria-label={`${cliente.nome}, voltar ao início`}>
+      <Marca site={site} />
+    </a>
+    <button class="bq__abrir" type="button" aria-expanded="false" aria-controls="menu-arco" data-abrir-menu>
+      {t.menu}
+    </button>
+  </div>
+
+  <nav class="container bq__nav" aria-label="Principal">
+    <ul>
+      {estilo.menu.map((item) => <li><a href={`#${item.ancora}`}>{item.rotulo}</a></li>)}
+    </ul>
+  </nav>
+</header>
+
+<div class="bq-fixa" data-fixa aria-hidden="true">
+  <div class="container bq-fixa__linha">
+    <a href="#topo" class="bq-fixa__marca" tabindex="-1"><Marca site={site} /></a>
+    <nav class="bq-fixa__nav" aria-label="Atalhos">
+      <ul>
+        {estilo.menu.map((item) => <li><a href={`#${item.ancora}`} tabindex="-1">{item.rotulo}</a></li>)}
+      </ul>
+    </nav>
+    <a class="botao bq-fixa__agendar" href={links.agendar} target="_blank" rel="noopener" tabindex="-1">{t.agendar}</a>
+    <button class="bq__abrir bq-fixa__abrir" type="button" tabindex="-1" data-abrir-menu>{t.menu}</button>
+  </div>
+</div>
+
+<div class="menu-arco" id="menu-arco" data-menu inert>
+  <div class="container menu-arco__topo">
+    <Marca site={site} />
+    <button type="button" class="bq__abrir" data-fechar-menu>{t.fechar}</button>
+  </div>
+  <nav class="container menu-arco__nav" aria-label="Menu">
+    <ul>
+      {
+        estilo.menu.map((item, i) => (
+          <li style={`--i:${i}`}>
+            <a href={`#${item.ancora}`} data-fechar-menu>{item.rotulo}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <div class="container menu-arco__rodape">
+    <a class="botao" href={links.agendar} target="_blank" rel="noopener"><Icone nome="whatsapp" /> {t.agendarLongo}</a>
+    <p>{endereco.linha1} · {endereco.bairro}, {endereco.cidade}</p>
+  </div>
+</div>
+
+<script>
+  const fixa = document.querySelector('[data-fixa]');
+  const menu = document.querySelector('[data-menu]');
+  const topo = document.getElementById('topo');
+  const botoes = document.querySelectorAll('[data-abrir-menu]');
+
+  // A barra compacta aparece quando o topo sai da tela
+  if (topo) {
+    new IntersectionObserver(([e]) => {
+      const mostrar = !e.isIntersecting && e.boundingClientRect.top < 0;
+      fixa.classList.toggle('bq-fixa--visivel', mostrar);
+      fixa.setAttribute('aria-hidden', String(!mostrar));
+      fixa.querySelectorAll('a, button').forEach((el) => (el.tabIndex = mostrar ? 0 : -1));
+    }, { rootMargin: '-40% 0px 0px 0px' }).observe(topo);
+  }
+
+  function alternar(aberto, origem) {
+    if (aberto && origem) {
+      // o círculo nasce no botão que foi tocado
+      const r = origem.getBoundingClientRect();
+      menu.style.setProperty('--origem-x', `${r.left + r.width / 2}px`);
+      menu.style.setProperty('--origem-y', `${r.top + r.height / 2}px`);
+    }
+    menu.classList.toggle('menu-arco--aberto', aberto);
+    menu.inert = !aberto;
+    botoes.forEach((b) => b.setAttribute('aria-expanded', String(aberto)));
+    document.documentElement.classList.toggle('sem-rolagem', aberto);
+  }
+
+  botoes.forEach((b) => b.addEventListener('click', () => alternar(true, b)));
+  menu.querySelectorAll('[data-fechar-menu]').forEach((el) => el.addEventListener('click', () => alternar(false)));
+  window.addEventListener('keydown', (e) => e.key === 'Escape' && alternar(false));
+</script>
+
+<style>
+  .bq__info {
+    border-bottom: 1px solid var(--linha);
+    font-size: 13px;
+    color: var(--tinta-suave);
+  }
+
+  .bq__info-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    height: 40px;
+  }
+
+  .bq__info-linha span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .bq__info :global(svg) {
+    width: 15px;
+    height: 15px;
+  }
+
+  .bq__info a {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    margin-left: 8px;
+    color: var(--tinta);
+  }
+
+  .bq__principal {
+    display: flex;
+    justify-content: center;
+    padding-top: 30px;
+  }
+
+  .bq__marca {
+    --marca-tamanho: 2rem;
+  }
+
+  .bq__nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 6px 36px;
+    padding-block: 22px 8px;
+  }
+
+  .bq__nav a {
+    position: relative;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--tinta-suave);
+    transition: color 0.3s;
+  }
+
+  .bq__nav a:hover {
+    color: var(--tinta);
+  }
+
+  .bq__nav a::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    width: 8px;
+    height: 10px;
+    border-radius: 999px 999px 0 0;
+    background: var(--destaque);
+    opacity: 0;
+    transform: translate(-50%, 4px);
+    transition:
+      opacity 0.3s,
+      transform 0.3s;
+  }
+
+  .bq__nav a:hover::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .bq__abrir {
+    display: none;
+    align-items: center;
+    height: 44px;
+    padding: 0 18px;
+    border: 1.5px solid var(--tinta);
+    border-radius: 999px 999px 6px 6px;
+    font-size: 14.5px;
+    font-weight: 700;
+  }
+
+  /* Barra compacta fixa */
+  .bq-fixa {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    background: var(--fundo-vidro);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 1px 0 var(--linha);
+    transform: translateY(-105%);
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .bq-fixa--visivel {
+    transform: none;
+  }
+
+  .bq-fixa__linha {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: var(--altura-cab);
+  }
+
+  .bq-fixa__marca {
+    --marca-tamanho: 1.3rem;
+  }
+
+  .bq-fixa__nav {
+    margin-left: auto;
+  }
+
+  .bq-fixa__nav ul {
+    display: flex;
+    gap: 28px;
+  }
+
+  .bq-fixa__nav a {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--tinta-suave);
+  }
+
+  .bq-fixa__nav a:hover {
+    color: var(--tinta);
+  }
+
+  .bq-fixa__agendar {
+    min-height: 44px;
+    padding: 0 22px;
+    font-size: 14.5px;
+  }
+
+  @media (max-width: 1023px) {
+    .bq__info,
+    .bq__nav,
+    .bq-fixa__nav,
+    .bq-fixa__agendar {
+      display: none;
+    }
+
+    .bq__principal {
+      justify-content: space-between;
+      align-items: center;
+      padding-block: 18px;
+    }
+
+    .bq__marca {
+      --marca-tamanho: 1.3rem;
+    }
+
+    .bq__marca :global(.marca),
+    .bq-fixa__marca :global(.marca) {
+      align-items: flex-start;
+    }
+
+    .bq__abrir {
+      display: inline-flex;
+    }
+
+    .bq-fixa__abrir {
+      margin-left: auto;
+    }
+  }
+
+  /* Menu que se abre num círculo a partir do botão */
+  .menu-arco {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    background: var(--fundo-alt);
+    clip-path: circle(0 at var(--origem-x, 90%) var(--origem-y, 40px));
+    visibility: hidden;
+    transition:
+      clip-path 0.6s cubic-bezier(0.7, 0, 0.2, 1),
+      visibility 0s linear 0.6s;
+  }
+
+  .menu-arco--aberto {
+    clip-path: circle(150% at var(--origem-x, 90%) var(--origem-y, 40px));
+    visibility: visible;
+    transition: clip-path 0.7s cubic-bezier(0.7, 0, 0.2, 1);
+  }
+
+  .menu-arco__topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 18px;
+    --marca-tamanho: 1.3rem;
+  }
+
+  .menu-arco__topo :global(.marca) {
+    align-items: flex-start;
+  }
+
+  .menu-arco__topo .bq__abrir {
+    display: inline-flex;
+  }
+
+  .menu-arco__nav {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .menu-arco__nav ul {
+    display: grid;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .menu-arco__nav li {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .menu-arco--aberto .menu-arco__nav li {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.3s + var(--i) * 0.06s);
+  }
+
+  .menu-arco__nav a {
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2.2rem, 9vw, 3.2rem);
+    line-height: 1.15;
+  }
+
+  .menu-arco__rodape {
+    display: grid;
+    gap: 16px;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom));
+    text-align: center;
+    font-size: 14px;
+    color: var(--tinta-suave);
+  }
+
+  @media (min-width: 1024px) {
+    .menu-arco {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,97 @@
+---
+// Botão flutuante de agendamento (celular e tablet). Aparece depois do topo e some na chamada final.
+import Icone from './Icone.astro';
+
+const { site } = Astro.props;
+const t = site.textos.flutuante;
+---
+
+<a class="bf" href={site.links.agendar} target="_blank" rel="noopener" data-flutuante>
+  <Icone nome="whatsapp" />
+  <span>{t.texto}</span>
+</a>
+
+<script>
+  const botao = document.querySelector('[data-flutuante]');
+  const topo = document.getElementById('topo');
+  const finais = [document.getElementById('agendar'), document.querySelector('body > footer')].filter(Boolean);
+  const finaisVisiveis = new Set();
+  let passouTopo = false;
+
+  const atualizar = () => botao.classList.toggle('bf--visivel', passouTopo && finaisVisiveis.size === 0);
+
+  if (topo) {
+    new IntersectionObserver(([e]) => {
+      passouTopo = !e.isIntersecting;
+      atualizar();
+    }).observe(topo);
+  }
+
+  const observador = new IntersectionObserver((entradas) => {
+    for (const e of entradas) e.isIntersecting ? finaisVisiveis.add(e.target) : finaisVisiveis.delete(e.target);
+    atualizar();
+  });
+  finais.forEach((el) => observador.observe(el));
+
+  // Sobre seção escura o botão escuro sumiria: inverte as cores enquanto passa por ela.
+  // A faixa observada é só a parte de baixo da tela, onde o botão fica.
+  const escurasSobBotao = new Set();
+  const observadorEscuras = new IntersectionObserver(
+    (entradas) => {
+      for (const e of entradas) e.isIntersecting ? escurasSobBotao.add(e.target) : escurasSobBotao.delete(e.target);
+      botao.classList.toggle('bf--claro', escurasSobBotao.size > 0);
+    },
+    { rootMargin: '-88% 0px 0px 0px' },
+  );
+  document.querySelectorAll('.escuro').forEach((el) => observadorEscuras.observe(el));
+</script>
+
+<style>
+  .bf {
+    position: fixed;
+    right: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 56px;
+    padding: 0 22px 0 18px;
+    border-radius: 999px;
+    background: var(--tinta);
+    color: var(--fundo);
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 14px 30px -12px rgb(0 0 0 / 0.45);
+    opacity: 0;
+    transform: translateY(20px) scale(0.92);
+    pointer-events: none;
+    transition:
+      opacity 0.4s,
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      background-color 0.35s,
+      color 0.35s;
+  }
+
+  .bf--visivel {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .bf--claro {
+    background: var(--sobre-escuro);
+    color: var(--escuro);
+  }
+
+  .bf :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+
+  @media (min-width: 1024px) {
+    .bf {
+      display: none;
+    }
+  }
+</style>

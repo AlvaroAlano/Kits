@@ -1,0 +1,117 @@
+---
+// Rodapé claro e enxuto: marca, atalhos e contato numa linha; créditos embaixo.
+import Marca from '../comum/Marca.astro';
+import Icone from '../comum/Icone.astro';
+
+const { site } = Astro.props;
+const { cliente, links, ano, estilo } = site;
+const { profissional, contato } = cliente;
+---
+
+<footer class="rl">
+  <div class="container">
+    <div class="rl__linha">
+      <a href="#topo" class="rl__marca" aria-label={`${cliente.nome}, voltar ao início`}>
+        <Marca site={site} />
+      </a>
+
+      <nav aria-label="Rodapé">
+        <ul class="rl__menu">
+          {estilo.menu.map((item) => <li><a href={`#${item.ancora}`}>{item.rotulo}</a></li>)}
+        </ul>
+      </nav>
+
+      <div class="rl__redes">
+        <a href={links.whats} target="_blank" rel="noopener" aria-label="WhatsApp"><Icone nome="whatsapp" /></a>
+        {links.instagram && <a href={links.instagram} target="_blank" rel="noopener" aria-label="Instagram"><Icone nome="instagram" /></a>}
+      </div>
+    </div>
+
+    <div class="rl__base">
+      <p>© {ano} {cliente.nome} · Responsável técnica: {profissional.nome} · {profissional.registro}</p>
+      <p>{contato.whatsappExibicao} · Site por Convcard</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .rl {
+    padding-block: 48px calc(32px + env(safe-area-inset-bottom));
+  }
+
+  .rl__linha {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--linha);
+  }
+
+  .rl__marca {
+    --marca-tamanho: 1.3rem;
+  }
+
+  .rl__menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 28px;
+    font-size: 14.5px;
+    color: var(--tinta-suave);
+  }
+
+  .rl__menu a:hover {
+    color: var(--tinta);
+  }
+
+  .rl__redes {
+    display: flex;
+    gap: 8px;
+  }
+
+  .rl__redes a {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--linha-forte);
+    border-radius: 50%;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .rl__redes a:hover {
+    background: var(--tinta);
+    color: var(--fundo);
+  }
+
+  .rl__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 32px;
+    padding-top: 24px;
+    font-family: var(--fonte-rotulo);
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: var(--tinta-suave);
+  }
+
+  @media (max-width: 899px) {
+    .rl__linha {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 28px;
+    }
+
+    .rl__menu {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .rl__base {
+      flex-direction: column;
+      /* espaço para o botão flutuante */
+      padding-bottom: 64px;
+    }
+  }
+</style>

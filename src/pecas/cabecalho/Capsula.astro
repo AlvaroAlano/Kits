@@ -1,0 +1,359 @@
+---
+// Cabeçalho em "cápsula": uma barra arredondada que flutua sobre a página.
+// No celular vira marca + botão redondo que abre uma gaveta lateral.
+import Marca from '../comum/Marca.astro';
+import Icone from '../comum/Icone.astro';
+
+const { site } = Astro.props;
+const { estilo, cliente, links } = site;
+const { endereco, horarios = [] } = cliente;
+---
+
+<header class="cap" data-cap>
+  <div class="cap__barra">
+    <a href="#topo" class="cap__marca" aria-label={`${cliente.nome}, voltar ao início`}>
+      <Marca site={site} />
+    </a>
+
+    <nav class="cap__nav" aria-label="Principal">
+      <ul>
+        {estilo.menu.map((item) => <li><a href={`#${item.ancora}`}>{item.rotulo}</a></li>)}
+      </ul>
+    </nav>
+
+    <a class="cap__agendar" href={links.agendar} target="_blank" rel="noopener">Agendar avaliação</a>
+
+    <button class="cap__abrir" type="button" aria-expanded="false" aria-controls="gaveta" aria-label="Abrir menu" data-abrir-gaveta>
+      <span aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </div>
+</header>
+
+<div class="gaveta" id="gaveta" data-gaveta inert>
+  <div class="gaveta__fundo" data-fechar-gaveta></div>
+  <aside class="gaveta__painel" aria-label="Menu">
+    <div class="gaveta__topo">
+      <span class="gaveta__rotulo">Menu</span>
+      <button class="gaveta__fechar" type="button" aria-label="Fechar menu" data-fechar-gaveta>
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <nav>
+      <ol class="gaveta__lista">
+        {
+          estilo.menu.map((item, i) => (
+            <li style={`--i:${i}`}>
+              <a href={`#${item.ancora}`} data-fechar-gaveta>
+                <span>{String(i + 1).padStart(2, '0')}</span>
+                {item.rotulo}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <div class="gaveta__cartao">
+      <p>
+        {endereco.linha1}<br />
+        {endereco.bairro} · {endereco.cidade}/{endereco.uf}
+      </p>
+      {horarios.length > 0 && <p class="gaveta__horario">{horarios[0]}</p>}
+      <a class="botao" href={links.agendar} target="_blank" rel="noopener">
+        <Icone nome="whatsapp" /> Agendar pelo WhatsApp
+      </a>
+    </div>
+  </aside>
+</div>
+
+<script>
+  const cap = document.querySelector('[data-cap]');
+  const gaveta = document.querySelector('[data-gaveta]');
+  const abrir = document.querySelector('[data-abrir-gaveta]');
+
+  window.addEventListener('scroll', () => cap.classList.toggle('cap--rolou', window.scrollY > 16), { passive: true });
+
+  function alternar(aberta) {
+    gaveta.classList.toggle('gaveta--aberta', aberta);
+    gaveta.inert = !aberta;
+    abrir.setAttribute('aria-expanded', String(aberta));
+    document.documentElement.classList.toggle('sem-rolagem', aberta);
+  }
+
+  abrir.addEventListener('click', () => alternar(true));
+  gaveta.querySelectorAll('[data-fechar-gaveta]').forEach((el) => el.addEventListener('click', () => alternar(false)));
+  window.addEventListener('keydown', (e) => e.key === 'Escape' && alternar(false));
+</script>
+
+<style>
+  .cap {
+    position: fixed;
+    inset: 12px 0 auto;
+    z-index: 50;
+    padding-inline: 12px;
+    pointer-events: none;
+  }
+
+  .cap__barra {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    max-width: 1180px;
+    height: 64px;
+    margin-inline: auto;
+    padding: 0 10px 0 26px;
+    border: 1px solid var(--linha);
+    border-radius: 999px;
+    background: var(--fundo-vidro);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(16px) saturate(1.4);
+    pointer-events: auto;
+    transition: box-shadow 0.4s;
+  }
+
+  .cap--rolou .cap__barra {
+    box-shadow: 0 10px 30px -18px rgb(0 0 0 / 0.35);
+  }
+
+  .cap__marca {
+    --marca-tamanho: 1.35rem;
+    flex: none;
+  }
+
+  .cap__nav {
+    flex: 1;
+  }
+
+  .cap__nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .cap__nav a {
+    display: block;
+    padding: 9px 14px;
+    border-radius: 999px;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--tinta-suave);
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .cap__nav a:hover {
+    background: var(--fundo-alt);
+    color: var(--tinta);
+  }
+
+  .cap__agendar {
+    flex: none;
+    padding: 13px 22px;
+    border-radius: 999px;
+    background: var(--tinta);
+    color: var(--fundo);
+    font-size: 14.5px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+  }
+
+  .cap__agendar:hover {
+    background: var(--tinta-suave);
+  }
+
+  .cap__abrir {
+    display: none;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    margin-left: auto;
+    border-radius: 50%;
+    background: var(--tinta);
+    color: var(--fundo);
+  }
+
+  .cap__abrir span {
+    display: grid;
+    gap: 5px;
+    width: 18px;
+  }
+
+  .cap__abrir i {
+    display: block;
+    height: 1.5px;
+    border-radius: 2px;
+    background: currentColor;
+  }
+
+  @media (max-width: 1023px) {
+    .cap {
+      inset: 10px 0 auto;
+      padding-inline: 10px;
+    }
+
+    .cap__barra {
+      height: 60px;
+      padding: 0 7px 0 20px;
+    }
+
+    .cap__marca {
+      --marca-tamanho: 1.15rem;
+    }
+
+    .cap__nav,
+    .cap__agendar {
+      display: none;
+    }
+
+    .cap__abrir {
+      display: grid;
+    }
+  }
+
+  /* Gaveta lateral */
+  .gaveta {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    visibility: hidden;
+    transition: visibility 0s linear 0.5s;
+  }
+
+  .gaveta--aberta {
+    visibility: visible;
+    transition: none;
+  }
+
+  .gaveta__fundo {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 0 0 / 0.32);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .gaveta--aberta .gaveta__fundo {
+    opacity: 1;
+  }
+
+  .gaveta__painel {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    width: min(calc(100% - 20px), 400px);
+    padding: 22px 22px calc(22px + env(safe-area-inset-bottom));
+    border-radius: 28px;
+    background: var(--fundo);
+    overflow-y: auto;
+    transform: translateX(calc(100% + 20px));
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .gaveta--aberta .gaveta__painel {
+    transform: none;
+  }
+
+  .gaveta__topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .gaveta__rotulo {
+    font-family: var(--fonte-rotulo);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+  }
+
+  .gaveta__fechar {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--fundo-alt);
+  }
+
+  .gaveta__fechar span::before,
+  .gaveta__fechar span::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 18px;
+    height: 1.5px;
+    background: var(--tinta);
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .gaveta__fechar span::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  .gaveta__lista {
+    margin-top: 28px;
+  }
+
+  .gaveta__lista li {
+    border-top: 1px solid var(--linha);
+    opacity: 0;
+    transform: translateX(16px);
+    transition:
+      opacity 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .gaveta--aberta .gaveta__lista li {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.15s + var(--i) * 0.05s);
+  }
+
+  .gaveta__lista a {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 16px 2px;
+    font-family: var(--fonte-titulo);
+    font-size: 2rem;
+    line-height: 1.1;
+  }
+
+  .gaveta__lista a span {
+    font-family: var(--fonte-rotulo);
+    font-size: 12px;
+    color: var(--tinta-suave);
+  }
+
+  .gaveta__cartao {
+    display: grid;
+    gap: 10px;
+    margin-top: auto;
+    padding: 20px;
+    border-radius: 20px;
+    background: var(--fundo-alt);
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--tinta-suave);
+  }
+
+  .gaveta__horario {
+    font-family: var(--fonte-rotulo);
+    font-size: 12px;
+  }
+
+  .gaveta__cartao .botao {
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  @media (min-width: 1024px) {
+    .gaveta {
+      display: none;
+    }
+  }
+</style>

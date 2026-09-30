@@ -1,0 +1,168 @@
+---
+// Topo com a foto de ponta a ponta e a borda de baixo curva (orgânica).
+// Texto claro sobre um véu escuro, ancorado embaixo à esquerda.
+import Foto from '../comum/Foto.astro';
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.hero;
+---
+
+<section class="hs" id="topo">
+  <div class="hs__midia">
+    <!-- no celular a foto deitada é ampliada para cobrir a tela em pé: pede uma versão bem maior -->
+    <Foto class="hs__foto" foto={site.fotos.hero} prioridade sizes="(max-width: 899px) 320vw, 100vw" />
+    <div class="hs__veu" aria-hidden="true"></div>
+  </div>
+
+  <div class="container hs__conteudo">
+    <div class="hs__principal">
+      <p class="sobrelinha hs__sobrelinha" data-revelar>{t.sobrelinha}</p>
+      <h1 class="titulo titulo--1 hs__titulo" data-revelar style="--atraso:120ms" set:html={fmt(t.titulo)} />
+    </div>
+    <div class="hs__lado" data-revelar style="--atraso:260ms">
+      <p class="hs__texto">{t.texto}</p>
+      <div class="hs__acoes">
+        <a class="botao botao--claro" href={site.links.agendar} target="_blank" rel="noopener">
+          {t.cta} <Icone nome="seta" />
+        </a>
+        <a class="hs__link" href="#tratamentos">{t.ctaSecundario}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hs {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: max(620px, min(100svh, 980px));
+    color: var(--sobre-escuro);
+    isolation: isolate;
+  }
+
+  .hs__midia {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    /* borda de baixo curva, como uma folha */
+    border-radius: 0 0 50% 50% / 0 0 80px 80px;
+    background: var(--escuro);
+  }
+
+  .hs__foto {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hs__veu {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, color-mix(in srgb, var(--escuro) 45%, transparent), transparent 22%),
+      linear-gradient(to top, color-mix(in srgb, var(--escuro) 82%, transparent), color-mix(in srgb, var(--escuro) 18%, transparent) 55%, transparent 75%);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hs__foto :global(img) {
+      animation: hs-respirar 2.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+  }
+
+  @keyframes hs-respirar {
+    from {
+      transform: scale(1.08);
+    }
+    to {
+      transform: none;
+    }
+  }
+
+  .hs__conteudo {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--colunas-gap);
+    align-items: end;
+    padding-bottom: clamp(104px, 12vw, 152px);
+  }
+
+  .hs__principal {
+    grid-column: 1 / span 8;
+  }
+
+  .hs__sobrelinha {
+    color: var(--sobre-escuro);
+  }
+
+  .hs__titulo {
+    max-width: 11ch;
+    margin-top: 18px;
+  }
+
+  .hs__lado {
+    grid-column: 9 / -1;
+  }
+
+  .hs__texto {
+    font-size: 17px;
+    line-height: 1.65;
+    color: color-mix(in srgb, var(--sobre-escuro) 86%, transparent);
+  }
+
+  .hs__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+    margin-top: 28px;
+  }
+
+  .hs__link {
+    font-weight: 600;
+    border-bottom: 1.5px solid color-mix(in srgb, var(--sobre-escuro) 50%, transparent);
+    padding-bottom: 3px;
+    transition: border-color 0.3s;
+  }
+
+  .hs__link:hover {
+    border-color: var(--sobre-escuro);
+  }
+
+  @media (max-width: 899px) {
+    .hs {
+      min-height: 94svh;
+    }
+
+    .hs__midia {
+      border-radius: 0 0 50% 50% / 0 0 36px 36px;
+    }
+
+    /* no celular o texto ocupa mais da metade da foto: o véu sobe junto */
+    .hs__veu {
+      background:
+        linear-gradient(to bottom, color-mix(in srgb, var(--escuro) 45%, transparent), transparent 18%),
+        linear-gradient(to top, color-mix(in srgb, var(--escuro) 88%, transparent), color-mix(in srgb, var(--escuro) 55%, transparent) 55%, transparent 82%);
+    }
+
+    .hs__conteudo {
+      display: block;
+      /* espaço para a barra de navegação de baixo */
+      padding-bottom: 112px;
+    }
+
+    .hs__lado {
+      margin-top: 20px;
+    }
+
+    .hs__texto {
+      font-size: 16px;
+    }
+
+    .hs__acoes .botao {
+      flex: 1 1 100%;
+    }
+  }
+</style>

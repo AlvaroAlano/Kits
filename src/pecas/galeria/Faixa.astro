@@ -1,0 +1,140 @@
+---
+// Galeria em duas faixas de fotos rolando sozinhas, em sentidos opostos. Para ao passar o mouse.
+// Com "reduzir movimento" ligado no aparelho, vira uma faixa parada que dá para arrastar.
+import Foto from '../comum/Foto.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.galeria;
+const fotos = site.fotos.galeria;
+const meio = Math.ceil(fotos.length / 2);
+const linhas = [fotos.slice(0, meio), fotos.slice(meio)].filter((l) => l.length);
+const PROPORCOES = ['4 / 5', '1 / 1', '3 / 4', '5 / 4', '4 / 5'];
+---
+
+<section class="gf secao" id="espaco">
+  <div class="container gf__topo">
+    <div>
+      <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+      <h2 class="titulo titulo--2 gf__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+    </div>
+    {t.texto && <p class="texto" data-revelar style="--atraso:180ms">{t.texto}</p>}
+  </div>
+
+  <div class="gf__faixas" data-revelar>
+    {
+      linhas.map((linha, li) => (
+        <div class:list={['gf__faixa', li % 2 === 1 && 'gf__faixa--volta']}>
+          <ul class="gf__trilho">
+            {[...linha, ...linha].map((foto, i) => (
+              <li
+                aria-hidden={i >= linha.length ? 'true' : undefined}
+                style={`--proporcao:${PROPORCOES[(i + li * 2) % PROPORCOES.length]}`}
+              >
+                <Foto class="gf__foto" foto={i >= linha.length ? { ...foto, alt: '' } : foto} sizes="(min-width: 900px) 24vw, 60vw" />
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .gf__topo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px 64px;
+  }
+
+  .gf__titulo {
+    margin-top: 20px;
+  }
+
+  .gf__topo > .texto {
+    max-width: 38ch;
+  }
+
+  .gf__faixas {
+    display: grid;
+    gap: 12px;
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+
+  .gf__faixa {
+    overflow: hidden;
+  }
+
+  .gf__trilho {
+    display: flex;
+    gap: 12px;
+    width: max-content;
+  }
+
+  .gf__trilho li {
+    flex: none;
+    height: clamp(200px, 24vw, 340px);
+    aspect-ratio: var(--proporcao);
+  }
+
+  .gf__foto {
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .gf__trilho {
+      animation: gf-rolar 70s linear infinite;
+    }
+
+    .gf__faixa--volta .gf__trilho {
+      animation-direction: reverse;
+    }
+
+    .gf__faixa:hover .gf__trilho {
+      animation-play-state: paused;
+    }
+  }
+
+  /* metade do trilho = uma cópia das fotos + metade do espaço entre as cópias */
+  @keyframes gf-rolar {
+    to {
+      transform: translateX(calc(-50% - 6px));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gf__faixa {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+    }
+
+    .gf__trilho li {
+      scroll-snap-align: start;
+    }
+
+    .gf__trilho li[aria-hidden='true'] {
+      display: none;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .gf__faixas,
+    .gf__trilho {
+      gap: 8px;
+    }
+
+    .gf__trilho li {
+      height: 220px;
+    }
+
+    @keyframes gf-rolar {
+      to {
+        transform: translateX(calc(-50% - 4px));
+      }
+    }
+  }
+</style>

@@ -1,0 +1,146 @@
+---
+// Sobre a especialista: texto à esquerda e a foto ocupando a metade direita até a borda da tela,
+// com um adesivo inclinado e números em blocos.
+import Foto from '../comum/Foto.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.sobre;
+---
+
+<section class="sl" id="sobre">
+  <div class="sl__texto">
+    <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+    <h2 class="titulo titulo--2 sl__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+    <div class="sl__paragrafos">
+      {t.paragrafos.map((p, i) => <p class="texto" data-revelar style={`--atraso:${150 + i * 80}ms`}>{p}</p>)}
+    </div>
+    <ul class="sl__numeros">
+      {
+        t.numeros.map((n, i) => (
+          <li data-revelar style={`--atraso:${i * 90}ms`}>
+            <strong>{n.valor}</strong>
+            <span>{n.rotulo}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="sl__midia">
+    <Foto class="sl__foto" foto={site.fotos.especialista} sizes="(min-width: 900px) 50vw, 100vw" />
+    {t.adesivo && <span class="sl__adesivo" aria-hidden="true">{t.adesivo}</span>}
+  </div>
+</section>
+
+<style>
+  .sl {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    margin-top: var(--espaco-secao);
+  }
+
+  .sl__texto {
+    padding-block: clamp(48px, 6vw, 96px);
+    padding-right: clamp(32px, 5vw, 80px);
+    /* alinha o texto com o resto do conteúdo, mesmo com a foto indo até a borda */
+    padding-left: max(var(--margem), calc((100vw - var(--largura)) / 2 + var(--margem)));
+    align-self: center;
+  }
+
+  .sl__titulo {
+    margin-top: 22px;
+  }
+
+  .sl__paragrafos {
+    display: grid;
+    gap: 16px;
+    margin-top: 26px;
+  }
+
+  .sl__numeros {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 40px;
+  }
+
+  .sl__numeros li {
+    display: grid;
+    gap: 6px;
+    padding: 20px 18px;
+    border-radius: 20px;
+    background: var(--fundo-alt);
+  }
+
+  .sl__numeros strong {
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2rem, 3vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--escuro);
+  }
+
+  .sl__numeros span {
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--tinta-suave);
+  }
+
+  .sl__midia {
+    position: relative;
+    min-height: clamp(520px, 52vw, 760px);
+  }
+
+  .sl__foto {
+    position: absolute;
+    inset: 0;
+  }
+
+  .sl__adesivo {
+    position: absolute;
+    top: clamp(28px, 4vw, 56px);
+    left: clamp(-40px, -2.5vw, -20px);
+    padding: 12px 20px;
+    border-radius: 999px;
+    background: var(--escuro);
+    color: var(--sobre-escuro);
+    font-family: var(--fonte-titulo);
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    transform: rotate(-7deg);
+    box-shadow: 0 12px 30px -14px rgb(0 0 0 / 0.45);
+  }
+
+  @media (max-width: 899px) {
+    .sl {
+      grid-template-columns: 1fr;
+    }
+
+    .sl__midia {
+      order: -1;
+      min-height: 0;
+      aspect-ratio: 4 / 5;
+    }
+
+    .sl__adesivo {
+      top: auto;
+      bottom: 20px;
+      left: var(--margem);
+    }
+
+    .sl__texto {
+      padding: 48px var(--margem) 0;
+    }
+
+    .sl__numeros {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .sl__numeros li:last-child {
+      grid-column: span 2;
+    }
+  }
+</style>

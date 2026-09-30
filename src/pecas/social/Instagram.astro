@@ -1,0 +1,65 @@
+---
+// Chamada para o Instagram com o @ da clínica em letras gigantes. Não aparece se a ficha não tiver Instagram.
+import Icone from '../comum/Icone.astro';
+
+const { site } = Astro.props;
+const t = site.textos.social;
+const { contato } = site.cliente;
+---
+
+{
+  site.links.instagram && (
+    <section class="si secao" style={`--letras:${contato.instagram.length + 1}`}>
+      <div class="container si__caixa">
+        <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+        <a class="si__arroba" href={site.links.instagram} target="_blank" rel="noopener" data-revelar style="--atraso:100ms">
+          @{contato.instagram}
+        </a>
+        <p class="texto si__texto" data-revelar style="--atraso:180ms">{t.texto}</p>
+        <a class="botao botao--contorno" href={site.links.instagram} target="_blank" rel="noopener" data-revelar style="--atraso:240ms">
+          <Icone nome="instagram" />
+          {t.cta}
+        </a>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .si {
+    container-type: inline-size;
+  }
+
+  .si__caixa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .si__arroba {
+    max-width: 100%;
+    margin-top: 20px;
+    font-family: var(--fonte-titulo);
+    /* o @ cabe numa linha: a letra encolhe conforme o @ cresce */
+    font-size: min(7rem, calc((100cqi - 2 * var(--margem)) / (var(--letras) * 0.56)));
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.045em;
+    overflow-wrap: anywhere;
+    transition: color 0.3s;
+  }
+
+  .si__arroba:hover {
+    color: var(--destaque);
+  }
+
+  .si__texto {
+    margin-top: 22px;
+    max-width: 44ch;
+  }
+
+  .si__caixa .botao {
+    margin-top: 28px;
+  }
+</style>

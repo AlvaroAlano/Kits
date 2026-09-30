@@ -1,0 +1,131 @@
+---
+// Foto com recorte e a forma-assinatura do estilo:
+//   moldura: true | 'esquerda'  -> linha reta deslocada (Maison)
+//   forma: 'circulo' | 'arredondada' e anel: true -> recorte redondo com anel fino em volta (Clínico)
+//   forma: 'organica' -> recorte em forma de seixo (Botânico)
+//   forma: 'arco' (+ anel) -> topo em arco, base reta (Acolhedor)
+// O tamanho vem de quem usa: passe uma classe com largura, altura ou aspect-ratio.
+const {
+  foto,
+  class: classe,
+  sizes = '100vw',
+  prioridade = false,
+  moldura = false,
+  forma,
+  anel = false,
+} = Astro.props;
+
+import { comBase } from '../../lib/texto.js';
+
+const LARGURAS = [480, 720, 960, 1280, 1600, 2000];
+const ehUnsplash = foto.src.includes('images.unsplash.com');
+const url = (largura) => `${foto.src}${foto.src.includes('?') ? '&' : '?'}auto=format&fit=crop&q=78&w=${largura}`;
+const src = ehUnsplash ? url(1280) : comBase(foto.src);
+const srcset = ehUnsplash ? LARGURAS.map((l) => `${url(l)} ${l}w`).join(', ') : undefined;
+---
+
+<div
+  class:list={[
+    'foto',
+    moldura && 'foto--moldura',
+    moldura === 'esquerda' && 'foto--moldura-esq',
+    forma && `foto--${forma}`,
+    anel && 'foto--anel',
+    classe,
+  ]}
+  style={[foto.foco && `--foco:${foto.foco}`, foto.focoCelular && `--foco-celular:${foto.focoCelular}`].filter(Boolean).join(';') || undefined}
+>
+  <div class="foto__recorte">
+    <img
+      src={src}
+      srcset={srcset}
+      sizes={sizes}
+      alt={foto.alt ?? ''}
+      loading={prioridade ? 'eager' : 'lazy'}
+      fetchpriority={prioridade ? 'high' : undefined}
+      decoding="async"
+    />
+  </div>
+</div>
+
+<style>
+  .foto {
+    position: relative;
+  }
+
+  .foto__recorte {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--fundo-alt);
+  }
+
+  .foto img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--foco, 50% 40%);
+    /* tratamento de cor do estilo, para fotos de origens diferentes conversarem entre si */
+    filter: var(--filtro-foto, none);
+  }
+
+  /* no celular a foto costuma ser cortada em pé: dá para escolher outro ponto de foco */
+  @media (max-width: 899px) {
+    .foto img {
+      object-position: var(--foco-celular, var(--foco, 50% 40%));
+    }
+  }
+
+  .foto--moldura::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--destaque);
+    transform: translate(var(--moldura-x, 18px), var(--moldura-y, 18px));
+    pointer-events: none;
+  }
+
+  .foto--moldura-esq::before {
+    transform: translate(calc(var(--moldura-x, 18px) * -1), var(--moldura-y, 18px));
+  }
+
+  .foto--circulo {
+    aspect-ratio: 1;
+  }
+
+  .foto--circulo .foto__recorte {
+    border-radius: 50%;
+  }
+
+  .foto--arredondada .foto__recorte {
+    border-radius: var(--raio-foto, 24px);
+  }
+
+  /* Arco (Acolhedor): topo em meio círculo, base reta. Com anel, o contorno acompanha o arco. */
+  .foto--arco .foto__recorte {
+    border-radius: 999px 999px 0 0;
+  }
+
+  .foto--arco.foto--anel::before {
+    inset: calc(var(--anel-distancia, 14px) * -1) calc(var(--anel-distancia, 14px) * -1) 0;
+    border-bottom: 0;
+    border-radius: 999px 999px 0 0;
+  }
+
+  /* Recorte orgânico (Botânico); quem usa pode trocar o desenho por --forma-organica */
+  .foto--organica .foto__recorte {
+    border-radius: var(--forma-organica, 62% 38% 46% 54% / 48% 58% 42% 52%);
+  }
+
+  .foto--anel::before {
+    content: '';
+    position: absolute;
+    inset: calc(var(--anel-distancia, 14px) * -1);
+    border: 1px solid var(--anel-cor, var(--linha-forte));
+    border-radius: 50%;
+    pointer-events: none;
+  }
+</style>

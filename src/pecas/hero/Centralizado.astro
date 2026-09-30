@@ -1,0 +1,170 @@
+---
+// Topo centralizado: selo, título grande no centro, botões e uma composição de fotos redondas.
+// No celular o título vem primeiro e as fotos logo abaixo, com as duas menores sobrepostas.
+import Foto from '../comum/Foto.astro';
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.hero;
+const apoio = site.fotos.heroApoio ?? [];
+---
+
+<section class="hc" id="topo">
+  <div class="container hc__texto">
+    <p class="hc__selo" data-revelar><span aria-hidden="true"></span>{t.sobrelinha}</p>
+    <h1 class="titulo titulo--1 hc__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+    <p class="texto hc__lead" data-revelar style="--atraso:200ms">{t.texto}</p>
+    <div class="hc__acoes" data-revelar style="--atraso:300ms">
+      <a class="botao" href={site.links.agendar} target="_blank" rel="noopener">
+        {t.cta} <Icone nome="seta" />
+      </a>
+      <a class="botao botao--contorno" href="#tratamentos">{t.ctaSecundario}</a>
+    </div>
+  </div>
+
+  <div class="hc__fotos" data-revelar style="--atraso:380ms">
+    {apoio[0] && <Foto class="hc__apoio hc__apoio--esq" foto={apoio[0]} forma="circulo" sizes="(min-width: 900px) 220px, 34vw" />}
+    <Foto class="hc__principal" foto={site.fotos.hero} forma="circulo" anel prioridade sizes="(min-width: 900px) 460px, 80vw" />
+    {apoio[1] && <Foto class="hc__apoio hc__apoio--dir" foto={apoio[1]} forma="circulo" sizes="(min-width: 900px) 220px, 34vw" />}
+  </div>
+</section>
+
+<style>
+  .hc {
+    padding-top: calc(var(--altura-cab) + clamp(56px, 8vw, 104px));
+    text-align: center;
+  }
+
+  .hc__texto {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hc__selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px 8px 12px;
+    border: 1px solid var(--linha);
+    border-radius: 999px;
+    font-family: var(--fonte-rotulo);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+  }
+
+  .hc__selo span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--destaque);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--destaque) 22%, transparent);
+  }
+
+  .hc__titulo {
+    max-width: 14ch;
+    margin-top: 28px;
+  }
+
+  .hc__lead {
+    max-width: 50ch;
+    margin-top: 26px;
+  }
+
+  .hc__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 36px;
+  }
+
+  .hc__fotos {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top: clamp(64px, 8vw, 104px);
+    padding-inline: var(--margem);
+  }
+
+  .hc__principal {
+    --anel-distancia: 18px;
+    --anel-cor: var(--linha-forte);
+    width: clamp(280px, 34vw, 460px);
+    z-index: 1;
+  }
+
+  /* contorno sutil: fotos de fundo branco não "somem" no fundo claro da página */
+  .hc__principal :global(.foto__recorte) {
+    box-shadow: 0 0 0 1px var(--linha);
+  }
+
+  .hc__apoio {
+    width: clamp(120px, 15vw, 220px);
+    z-index: 2;
+  }
+
+  .hc__apoio :global(.foto__recorte) {
+    box-shadow: 0 0 0 7px var(--fundo);
+  }
+
+  .hc__apoio--esq {
+    margin-right: calc(clamp(120px, 15vw, 220px) * -0.28);
+    margin-bottom: 4%;
+  }
+
+  .hc__apoio--dir {
+    margin-left: calc(clamp(120px, 15vw, 220px) * -0.28);
+    margin-bottom: 14%;
+  }
+
+  @media (max-width: 899px) {
+    .hc {
+      padding-top: calc(var(--altura-cab) + 56px);
+    }
+
+    .hc__titulo {
+      margin-top: 22px;
+    }
+
+    .hc__lead {
+      margin-top: 20px;
+    }
+
+    .hc__acoes {
+      flex-direction: column;
+      align-self: stretch;
+      margin-top: 30px;
+    }
+
+    .hc__fotos {
+      position: relative;
+      margin-top: 64px;
+    }
+
+    .hc__principal {
+      width: min(78vw, 360px);
+    }
+
+    .hc__apoio {
+      position: absolute;
+      bottom: -6%;
+      width: min(30vw, 130px);
+      margin: 0;
+    }
+
+    .hc__apoio--esq {
+      left: max(var(--margem), calc(50% - min(39vw, 180px) - 24px));
+      margin: 0;
+    }
+
+    .hc__apoio--dir {
+      right: max(var(--margem), calc(50% - min(39vw, 180px) - 24px));
+      bottom: 22%;
+      margin: 0;
+    }
+  }
+</style>

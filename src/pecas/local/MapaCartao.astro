@@ -1,0 +1,248 @@
+---
+// Localização em cartão: endereço, horários e contato de um lado; do outro, um mapa que
+// só carrega do Google quando a pessoa pede (mais leve no celular e sem rastreio antes do clique).
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.local;
+const { endereco, contato, horarios = [], nome } = site.cliente;
+---
+
+<section class="mapa secao" id="contato">
+  <div class="container">
+    <div class="mapa__cartao">
+      <div class="mapa__info">
+        <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+        <h2 class="titulo titulo--2 mapa__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+
+        <dl class="mapa__blocos" data-revelar style="--atraso:180ms">
+          <div>
+            <dt>{t.endereco}</dt>
+            <dd>
+              {endereco.linha1}<br />
+              {endereco.bairro} · {endereco.cidade}/{endereco.uf} · CEP {endereco.cep}
+            </dd>
+          </div>
+          <div>
+            <dt>{t.horarios}</dt>
+            <dd>{horarios.map((h, i) => <Fragment>{i > 0 && <br />}{h}</Fragment>)}</dd>
+          </div>
+          <div>
+            <dt>{t.contato}</dt>
+            <dd>
+              <a href={site.links.whats} target="_blank" rel="noopener">{contato.whatsappExibicao}</a>
+              {
+                site.links.instagram && (
+                  <Fragment>
+                    <br />
+                    <a href={site.links.instagram} target="_blank" rel="noopener">@{contato.instagram}</a>
+                  </Fragment>
+                )
+              }
+            </dd>
+          </div>
+        </dl>
+
+        <div class="mapa__acoes" data-revelar style="--atraso:240ms">
+          <a class="botao" href={site.links.maps} target="_blank" rel="noopener"><Icone nome="mapa" /> {t.maps}</a>
+          <a class="botao botao--contorno" href={site.links.waze} target="_blank" rel="noopener"><Icone nome="navegar" /> {t.waze}</a>
+        </div>
+      </div>
+
+      <div class="mapa__area" data-mapa={site.links.mapaEmbed} data-titulo={`Mapa: ${nome}`}>
+        <div class="mapa__pino" aria-hidden="true"><span></span></div>
+        <p class="mapa__etiqueta">{endereco.bairro} · {endereco.cidade}</p>
+        <button type="button" class="mapa__carregar">{t.carregarMapa}</button>
+        <p class="mapa__aviso">{t.avisoMapa}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('[data-mapa]').forEach((area) => {
+    area.querySelector('button').addEventListener('click', () => {
+      const quadro = document.createElement('iframe');
+      quadro.src = area.dataset.mapa;
+      quadro.title = area.dataset.titulo;
+      quadro.loading = 'lazy';
+      quadro.referrerPolicy = 'no-referrer-when-downgrade';
+      quadro.allowFullscreen = true;
+      area.classList.add('mapa__area--carregado');
+      area.replaceChildren(quadro);
+    });
+  });
+</script>
+
+<style>
+  .mapa__cartao {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(32px, 4vw, 64px);
+    padding: clamp(12px, 1.2vw, 16px);
+    padding-left: clamp(28px, 5vw, 72px);
+    border-radius: 32px;
+    background: var(--fundo-alt);
+  }
+
+  .mapa__info {
+    padding-block: clamp(36px, 5vw, 64px);
+  }
+
+  .mapa__titulo {
+    margin-top: 24px;
+  }
+
+  .mapa__blocos {
+    display: grid;
+    gap: 22px;
+    margin: 40px 0 0;
+  }
+
+  .mapa__blocos dt {
+    font-family: var(--fonte-rotulo);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+  }
+
+  .mapa__blocos dd {
+    margin: 6px 0 0;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  .mapa__blocos a {
+    border-bottom: 1px solid var(--linha-forte);
+  }
+
+  .mapa__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 40px;
+  }
+
+  /* Mapa "de mentira" até o clique: grade de pontos, pino e botão */
+  .mapa__area {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-height: 420px;
+    border-radius: 24px;
+    background-color: var(--fundo);
+    background-image: radial-gradient(var(--linha-forte) 1px, transparent 1.5px);
+    background-size: 22px 22px;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  /* Anéis concêntricos em volta do pino */
+  .mapa__pino {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--destaque);
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--destaque) 20%, transparent);
+  }
+
+  .mapa__pino::before,
+  .mapa__pino::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 1px solid var(--linha-forte);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .mapa__pino::before {
+    width: 130px;
+    height: 130px;
+  }
+
+  .mapa__pino::after {
+    width: 270px;
+    height: 270px;
+  }
+
+  .mapa__pino span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--fundo);
+  }
+
+  .mapa__etiqueta {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--fundo);
+    font-family: var(--fonte-rotulo);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    box-shadow: 0 6px 18px -10px rgb(0 0 0 / 0.3);
+  }
+
+  .mapa__carregar {
+    margin-top: 18px;
+    padding: 12px 20px;
+    border: 1px solid var(--tinta);
+    border-radius: 999px;
+    background: var(--fundo);
+    font-size: 14.5px;
+    font-weight: 500;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .mapa__carregar:hover {
+    background: var(--tinta);
+    color: var(--fundo);
+  }
+
+  .mapa__aviso {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 18px;
+    font-size: 12.5px;
+    color: var(--tinta-suave);
+  }
+
+  .mapa__area :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  @media (max-width: 899px) {
+    .mapa__cartao {
+      grid-template-columns: 1fr;
+      padding: 10px;
+      border-radius: 28px;
+    }
+
+    .mapa__info {
+      padding: 32px 16px 12px;
+    }
+
+    .mapa__area {
+      min-height: 340px;
+    }
+
+    .mapa__acoes .botao {
+      flex: 1 1 100%;
+    }
+  }
+</style>

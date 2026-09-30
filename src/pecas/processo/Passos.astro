@@ -1,0 +1,113 @@
+---
+// Como é a primeira visita, em três passos numerados. Seção escura para quebrar o ritmo.
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.processo;
+const ROMANOS = ['i', 'ii', 'iii', 'iv', 'v', 'vi'];
+---
+
+<section class="passos secao escuro" id="primeira-visita">
+  <div class="container">
+    <div class="passos__topo">
+      <div>
+        <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+        <h2 class="titulo titulo--2 passos__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+      </div>
+      <p class="texto passos__texto" data-revelar style="--atraso:200ms">{t.texto}</p>
+    </div>
+
+    <ol class="passos__lista">
+      {
+        t.passos.map((passo, i) => (
+          <li data-revelar style={`--atraso:${i * 140}ms`}>
+            <span class="passos__num">{ROMANOS[i]}.</span>
+            <h3 class="titulo titulo--3">{passo.titulo}</h3>
+            <p class="texto">{passo.texto}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .passos__topo {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--colunas-gap);
+    align-items: end;
+  }
+
+  .passos__topo > div {
+    grid-column: 1 / span 7;
+  }
+
+  .passos__titulo {
+    margin-top: 28px;
+  }
+
+  .passos__texto {
+    grid-column: 9 / -1;
+  }
+
+  .passos__lista {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(32px, 4vw, 64px);
+    margin-top: clamp(64px, 8vw, 112px);
+  }
+
+  .passos__lista li {
+    padding-top: 28px;
+    border-top: 1px solid var(--linha-escuro);
+  }
+
+  .passos__num {
+    display: block;
+    margin-bottom: 36px;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2.6rem, 3.6vw, 3.5rem);
+    font-style: italic;
+    line-height: 1;
+    color: var(--destaque-escuro);
+  }
+
+  .passos__lista .texto {
+    margin-top: 14px;
+    font-size: 15.5px;
+  }
+
+  @media (max-width: 899px) {
+    .passos__topo {
+      display: block;
+    }
+
+    .passos__texto {
+      margin-top: 24px;
+    }
+
+    .passos__lista {
+      grid-template-columns: 1fr;
+      gap: 0;
+      margin-top: 56px;
+    }
+
+    .passos__lista li {
+      display: grid;
+      grid-template-columns: 3.5rem 1fr;
+      column-gap: 12px;
+      padding-block: 28px;
+    }
+
+    .passos__num {
+      grid-row: span 2;
+      margin: 0;
+      font-size: 2.25rem;
+    }
+
+    .passos__lista .texto {
+      margin-top: 8px;
+    }
+  }
+</style>

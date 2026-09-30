@@ -1,0 +1,295 @@
+---
+// Localização com a tabela de horários da semana e o aviso "Aberto agora / Fechado agora",
+// calculado no navegador pelo fuso da clínica. Sem horariosSemana na ficha, mostra só os textos.
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.local;
+const { endereco, contato, horarios = [], horariosSemana, fuso = 'America/Sao_Paulo' } = site.cliente;
+
+const DIAS = [
+  ['seg', 'Segunda'],
+  ['ter', 'Terça'],
+  ['qua', 'Quarta'],
+  ['qui', 'Quinta'],
+  ['sex', 'Sexta'],
+  ['sab', 'Sábado'],
+  ['dom', 'Domingo'],
+];
+
+// "09:00" -> "9h", "09:30" -> "9h30"
+const hora = (hhmm) => {
+  const [h, m] = hhmm.split(':').map(Number);
+  return m ? `${h}h${String(m).padStart(2, '0')}` : `${h}h`;
+};
+const faixa = (valor) => {
+  if (!valor) return t.fechadoDia;
+  const [inicio, fim] = valor.split('-');
+  return `${hora(inicio)} às ${hora(fim)}`;
+};
+
+const textosStatus = {
+  aberto: t.aberto,
+  fechado: t.fechado,
+  ate: t.ate,
+  abre: t.abre,
+  hoje: t.hoje,
+  amanha: t.amanha,
+  as: t.as,
+  dias: Object.fromEntries(DIAS.map(([chave, nome]) => [chave, nome.toLowerCase()])),
+};
+---
+
+<section class="hr secao" id="contato">
+  <div class="container hr__grade">
+    <div class="hr__info">
+      <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+      <h2 class="titulo titulo--2 hr__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+      <p class="hr__endereco" data-revelar style="--atraso:160ms">
+        {endereco.linha1}<br />
+        {endereco.bairro} · {endereco.cidade}/{endereco.uf} · CEP {endereco.cep}
+      </p>
+      <div class="hr__acoes" data-revelar style="--atraso:220ms">
+        <a class="botao" href={site.links.maps} target="_blank" rel="noopener"><Icone nome="mapa" /> {t.maps}</a>
+        <a class="botao botao--suave" href={site.links.waze} target="_blank" rel="noopener"><Icone nome="navegar" /> {t.waze}</a>
+      </div>
+      <p class="hr__contato" data-revelar style="--atraso:260ms">
+        <a href={site.links.whats} target="_blank" rel="noopener">{t.whats} · {contato.whatsappExibicao}</a>
+        {site.links.instagram && <a href={site.links.instagram} target="_blank" rel="noopener">@{contato.instagram}</a>}
+      </p>
+    </div>
+
+    <div
+      class="hr__cartao"
+      data-revelar
+      data-horarios={horariosSemana ? JSON.stringify(horariosSemana) : undefined}
+      data-fuso={fuso}
+      data-textos={JSON.stringify(textosStatus)}
+    >
+      <div class="hr__cabeca">
+        <h3>{t.horarios}</h3>
+        {horariosSemana && <p class="hr__status" data-status hidden><span></span><em data-status-texto></em></p>}
+      </div>
+      {
+        horariosSemana ? (
+          <ul class="hr__semana">
+            {DIAS.map(([chave, nome]) => (
+              <li data-dia={chave} class:list={[!horariosSemana[chave] && 'hr__fechado']}>
+                <span>{nome}</span>
+                <span>{faixa(horariosSemana[chave])}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <ul class="hr__semana">
+            {horarios.map((h) => <li><span>{h}</span></li>)}
+          </ul>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  const CHAVES = { Sun: 'dom', Mon: 'seg', Tue: 'ter', Wed: 'qua', Thu: 'qui', Fri: 'sex', Sat: 'sab' };
+  const ORDEM = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
+  const minutos = (hhmm) => {
+    const [h, m] = hhmm.split(':').map(Number);
+    return h * 60 + m;
+  };
+  const hora = (hhmm) => {
+    const [h, m] = hhmm.split(':').map(Number);
+    return m ? `${h}h${String(m).padStart(2, '0')}` : `${h}h`;
+  };
+
+  document.querySelectorAll('[data-horarios]').forEach((cartao) => {
+    const semana = JSON.parse(cartao.dataset.horarios);
+    const t = JSON.parse(cartao.dataset.textos);
+    const partes = Object.fromEntries(
+      new Intl.DateTimeFormat('en-US', {
+        timeZone: cartao.dataset.fuso,
+        weekday: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      })
+        .formatToParts(new Date())
+        .map((p) => [p.type, p.value]),
+    );
+    const hoje = CHAVES[partes.weekday];
+    const agora = (Number(partes.hour) % 24) * 60 + Number(partes.minute);
+
+    cartao.querySelector(`[data-dia="${hoje}"]`)?.classList.add('hr__hoje');
+
+    let aberto = false;
+    let texto;
+    const faixaHoje = semana[hoje];
+    if (faixaHoje) {
+      const [inicio, fim] = faixaHoje.split('-');
+      if (agora >= minutos(inicio) && agora < minutos(fim)) {
+        aberto = true;
+        texto = `${t.aberto} · ${t.ate} ${hora(fim)}`;
+      } else if (agora < minutos(inicio)) {
+        texto = `${t.fechado} · ${t.abre} ${t.hoje} ${t.as} ${hora(inicio)}`;
+      }
+    }
+    if (!texto) {
+      const posicao = ORDEM.indexOf(hoje);
+      for (let d = 1; d <= 7; d++) {
+        const chave = ORDEM[(posicao + d) % 7];
+        if (!semana[chave]) continue;
+        const quando = d === 1 ? t.amanha : t.dias[chave];
+        texto = `${t.fechado} · ${t.abre} ${quando} ${t.as} ${hora(semana[chave].split('-')[0])}`;
+        break;
+      }
+    }
+
+    const status = cartao.querySelector('[data-status]');
+    if (status && texto) {
+      status.querySelector('[data-status-texto]').textContent = texto;
+      status.classList.toggle('hr__status--aberto', aberto);
+      status.hidden = false;
+    }
+  });
+</script>
+
+<style>
+  .hr__grade {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--colunas-gap);
+    align-items: center;
+  }
+
+  .hr__info {
+    grid-column: 1 / span 6;
+  }
+
+  .hr__titulo {
+    margin-top: 16px;
+  }
+
+  .hr__endereco {
+    margin-top: 28px;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  .hr__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 32px;
+  }
+
+  .hr__contato {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin-top: 28px;
+    font-size: 15px;
+  }
+
+  .hr__contato a {
+    border-bottom: 1.5px solid var(--linha-forte);
+    padding-bottom: 2px;
+  }
+
+  .hr__cartao {
+    grid-column: 8 / -1;
+    padding: clamp(24px, 3vw, 40px);
+    border-radius: 32px;
+    background: var(--fundo-alt);
+  }
+
+  .hr__cabeca {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 18px;
+  }
+
+  .hr__cabeca h3 {
+    font-family: var(--fonte-titulo);
+    font-size: 1.6rem;
+    font-weight: 380;
+  }
+
+  .hr__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    background: var(--fundo);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--tinta-suave);
+  }
+
+  .hr__status em {
+    font-style: normal;
+  }
+
+  .hr__status span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--tinta-suave);
+  }
+
+  .hr__status--aberto {
+    color: var(--tinta);
+  }
+
+  .hr__status--aberto span {
+    background: var(--destaque);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--destaque) 25%, transparent);
+  }
+
+  .hr__semana li {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 13px 14px;
+    border-top: 1px solid var(--linha);
+    font-size: 15.5px;
+  }
+
+  .hr__semana li span:last-child {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hr__fechado {
+    color: var(--tinta-suave);
+  }
+
+  .hr__hoje {
+    border-radius: 14px;
+    border-top-color: transparent;
+    background: var(--fundo);
+    font-weight: 600;
+  }
+
+  .hr__hoje + li {
+    border-top-color: transparent;
+  }
+
+  @media (max-width: 899px) {
+    .hr__grade {
+      display: block;
+    }
+
+    .hr__cartao {
+      margin-top: 40px;
+      border-radius: 28px;
+    }
+
+    .hr__acoes .botao {
+      flex: 1 1 140px;
+    }
+  }
+</style>

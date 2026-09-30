@@ -1,0 +1,155 @@
+---
+// Localização sem mapa embutido (mais leve no celular): foto do espaço, endereço, horários
+// e botões que abrem o Google Maps ou o Waze.
+import Foto from '../comum/Foto.astro';
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.local;
+const { endereco, contato, horarios = [] } = site.cliente;
+---
+
+<section class="local secao" id="contato">
+  <div class="local__grade container">
+    <Foto class="local__foto" foto={site.fotos.local} moldura sizes="(min-width: 900px) 38vw, 86vw" />
+
+    <div class="local__texto">
+      <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+      <h2 class="titulo titulo--2 local__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+
+      <div class="local__blocos" data-revelar style="--atraso:200ms">
+        <div>
+          <h3 class="local__rotulo">{t.endereco}</h3>
+          <p>
+            {endereco.linha1}<br />
+            {endereco.bairro} · {endereco.cidade}/{endereco.uf}<br />
+            CEP {endereco.cep}
+          </p>
+        </div>
+        <div>
+          <h3 class="local__rotulo">{t.horarios}</h3>
+          <p>{horarios.map((h, i) => <Fragment>{i > 0 && <br />}{h}</Fragment>)}</p>
+        </div>
+        <div>
+          <h3 class="local__rotulo">{t.contato}</h3>
+          <p>
+            <a href={site.links.whats} target="_blank" rel="noopener">{contato.whatsappExibicao}</a>
+            {
+              site.links.instagram && (
+                <Fragment>
+                  <br />
+                  <a href={site.links.instagram} target="_blank" rel="noopener">@{contato.instagram}</a>
+                </Fragment>
+              )
+            }
+          </p>
+        </div>
+      </div>
+
+      <div class="local__acoes" data-revelar style="--atraso:300ms">
+        <a class="botao" href={site.links.maps} target="_blank" rel="noopener"><Icone nome="mapa" /> {t.maps}</a>
+        <a class="botao botao--contorno" href={site.links.waze} target="_blank" rel="noopener"><Icone nome="navegar" /> {t.waze}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .local {
+    background: var(--fundo-alt);
+  }
+
+  .local__grade {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--colunas-gap);
+    align-items: center;
+  }
+
+  .local__foto {
+    --moldura-x: 20px;
+    --moldura-y: 20px;
+    grid-column: 1 / span 5;
+    aspect-ratio: 4 / 5;
+  }
+
+  .local__texto {
+    grid-column: 7 / -1;
+  }
+
+  .local__titulo {
+    margin-top: 28px;
+  }
+
+  .local__blocos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px 40px;
+    margin-top: 48px;
+    padding-top: 36px;
+    border-top: 1px solid var(--linha);
+  }
+
+  .local__rotulo {
+    margin-bottom: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+  }
+
+  .local__blocos p {
+    font-size: 15.5px;
+    line-height: 1.8;
+  }
+
+  .local__blocos a {
+    border-bottom: 1px solid var(--linha-forte);
+    transition: border-color 0.3s;
+  }
+
+  .local__blocos a:hover {
+    border-color: var(--tinta);
+  }
+
+  .local__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 44px;
+  }
+
+  @media (max-width: 899px) {
+    .local__grade {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .local__texto {
+      order: 1;
+    }
+
+    .local__foto {
+      order: 2;
+      align-self: flex-end;
+      width: 86%;
+      margin-top: 64px;
+    }
+
+    .local__blocos {
+      grid-template-columns: 1fr;
+      gap: 28px;
+      margin-top: 36px;
+      padding-top: 28px;
+    }
+
+    .local__acoes .botao {
+      flex: 1 1 140px;
+      padding-inline: 14px;
+      letter-spacing: 0.16em;
+    }
+  }
+</style>

@@ -1,0 +1,60 @@
+---
+// Índice interno do kit: todas as fichas e os links de cada estilo.
+import { clientes, estilos, estilosDoCliente } from '../lib/site.js';
+import { comBase } from '../lib/texto.js';
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Kit de sites · Convcard</title>
+  </head>
+  <body>
+    <main>
+      <h1>Kit de sites</h1>
+      <p>{Object.keys(estilos).length} estilo(s) · {clientes.length} ficha(s)</p>
+      <ul>
+        {
+          clientes.map((c) => (
+            <li>
+              <a href={comBase(`/${c.slug}/`)}>{c.nome}</a>
+              {c.demo && <small> demo</small>}
+              <span>
+                {estilosDoCliente(c).map((id) => (
+                  <a href={comBase(`/${c.slug}/${id}/`)}>{estilos[id].nome}</a>
+                ))}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </main>
+
+    <style>
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 48px 20px;
+        font-family: system-ui, sans-serif;
+        line-height: 1.6;
+      }
+
+      li {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid #ddd;
+      }
+
+      span {
+        display: flex;
+        gap: 12px;
+        margin-left: auto;
+      }
+    </style>
+  </body>
+</html>

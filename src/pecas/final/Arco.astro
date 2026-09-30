@@ -1,0 +1,102 @@
+---
+// Chamada final dentro de um grande arco desenhado em linha fina, sobre fundo escuro.
+import Icone from '../comum/Icone.astro';
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.final;
+---
+
+<section class="fa escuro" id="agendar">
+  <div class="container">
+    <div class="fa__arco">
+      <p class="fa__nota" data-revelar>{t.nota}</p>
+      <h2 class="titulo titulo--2 fa__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+      <p class="texto fa__texto" data-revelar style="--atraso:180ms">{t.texto}</p>
+      <div class="fa__acoes" data-revelar style="--atraso:240ms">
+        <a class="botao botao--claro" href={site.links.agendar} target="_blank" rel="noopener">
+          <Icone nome="whatsapp" />
+          {t.cta}
+        </a>
+        <a class="fa__link" href={site.links.maps} target="_blank" rel="noopener">
+          <Icone nome="mapa" />
+          {t.comoChegar}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .fa {
+    padding-top: clamp(64px, 8vw, 112px);
+    overflow: hidden;
+  }
+
+  .fa__arco {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 760px;
+    margin-inline: auto;
+    padding: clamp(96px, 12vw, 160px) clamp(24px, 5vw, 72px) clamp(72px, 8vw, 112px);
+    border: 1px solid var(--linha-escuro);
+    border-bottom: 0;
+    border-radius: 999px 999px 0 0;
+    text-align: center;
+  }
+
+  .fa__nota {
+    font-family: var(--fonte-assinatura);
+    font-size: clamp(1.6rem, 2.4vw, 2rem);
+    line-height: 1;
+    color: var(--destaque-escuro);
+  }
+
+  .fa__titulo {
+    margin-top: 14px;
+  }
+
+  .fa__texto {
+    max-width: 40ch;
+    margin-top: 20px;
+  }
+
+  .fa__acoes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    margin-top: 36px;
+  }
+
+  .fa__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    border-bottom: 1.5px solid var(--linha-escuro);
+    padding-bottom: 3px;
+    transition: border-color 0.3s;
+  }
+
+  .fa__link:hover {
+    border-color: var(--sobre-escuro);
+  }
+
+  .fa__link :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+
+  @media (max-width: 599px) {
+    .fa__arco {
+      padding-top: 88px;
+    }
+
+    .fa__acoes {
+      align-self: stretch;
+    }
+  }
+</style>

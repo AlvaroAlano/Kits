@@ -1,0 +1,294 @@
+---
+// Tratamentos em formato de cardápio: nome ····· preço, agrupados por categoria.
+// Cada item abre o WhatsApp já com o nome do tratamento na mensagem.
+import Foto from '../comum/Foto.astro';
+import Icone from '../comum/Icone.astro';
+import { fmt, preco } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const t = site.textos.servicos;
+---
+
+<section class="cardapio secao" id="tratamentos">
+  <div class="cardapio__grade container">
+    <div class="cardapio__lateral">
+      <div class="cardapio__fixo">
+        <p class="sobrelinha" data-revelar>{t.sobrelinha}</p>
+        <h2 class="titulo titulo--2 cardapio__titulo" data-revelar style="--atraso:100ms" set:html={fmt(t.titulo)} />
+        <p class="texto cardapio__texto" data-revelar style="--atraso:200ms">{t.texto}</p>
+        {
+          site.fotos.tratamentos && (
+            <Foto class="cardapio__foto" foto={site.fotos.tratamentos} moldura sizes="(min-width: 900px) 24vw, 1px" />
+          )
+        }
+      </div>
+    </div>
+
+    <div class="cardapio__lista">
+      {
+        site.servicos.map((grupo) => (
+          <div class="cardapio__grupo" data-revelar>
+            <h3 class="cardapio__categoria">
+              <span set:html={fmt(grupo.categoria)} />
+              <span class="cardapio__qtd">{String(grupo.itens.length).padStart(2, '0')}</span>
+            </h3>
+            <ul>
+              {grupo.itens.map((item) => {
+                const p = preco(item);
+                return (
+                  <li>
+                    <a class="item" href={site.links.servico(item.nome)} target="_blank" rel="noopener">
+                      <span class="item__linha">
+                        <span class="item__nome">{item.nome}</span>
+                        <span class="item__pontos" aria-hidden="true" />
+                        <span class="item__preco">
+                          {p.aPartirDe && <small>{t.aPartirDe}</small>}
+                          {p.valor}
+                        </span>
+                      </span>
+                      <span class="item__info">
+                        <span class="item__desc">{item.descricao}</span>
+                        <span class="item__rodape">
+                          {item.duracao && <span class="item__duracao">{item.duracao}</span>}
+                          <span class="item__agendar">
+                            {t.agendar} <Icone nome="seta" />
+                          </span>
+                        </span>
+                      </span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))
+      }
+
+      <p class="cardapio__nota" data-revelar>
+        <span>{t.nota}</span>
+        <a class="link-seta" href={site.links.agendar} target="_blank" rel="noopener">{t.notaLink} <Icone nome="seta" /></a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cardapio__grade {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--colunas-gap);
+  }
+
+  .cardapio__lateral {
+    grid-column: 1 / span 4;
+  }
+
+  .cardapio__fixo {
+    position: sticky;
+    top: calc(var(--altura-cab) + 40px);
+  }
+
+  .cardapio__titulo {
+    margin-top: 28px;
+  }
+
+  .cardapio__texto {
+    margin-top: 24px;
+  }
+
+  .cardapio__foto {
+    width: min(100%, 300px);
+    aspect-ratio: 3 / 4;
+    margin-top: 48px;
+  }
+
+  .cardapio__lista {
+    grid-column: 6 / -1;
+    padding-top: 8px;
+  }
+
+  .cardapio__grupo + .cardapio__grupo {
+    margin-top: clamp(56px, 6vw, 88px);
+  }
+
+  .cardapio__categoria {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--tinta);
+    font-family: var(--fonte-titulo);
+    font-size: clamp(1.6rem, 2.2vw, 2.1rem);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  .cardapio__qtd {
+    font-family: var(--fonte-texto);
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    color: var(--tinta-suave);
+  }
+
+  .item {
+    display: block;
+    padding: 24px 0 22px;
+    border-bottom: 1px solid var(--linha);
+  }
+
+  .item__linha {
+    display: flex;
+    align-items: baseline;
+    align-items: last baseline;
+    gap: 14px;
+  }
+
+  .item__nome {
+    font-family: var(--fonte-titulo);
+    font-size: clamp(1.25rem, 1.55vw, 1.5rem);
+    line-height: 1.25;
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .item__pontos {
+    flex: 1;
+    min-width: 24px;
+    border-bottom: 1px dotted var(--linha-forte);
+    transform: translateY(-5px);
+  }
+
+  .item__preco {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    font-variant-numeric: lining-nums tabular-nums;
+    white-space: nowrap;
+  }
+
+  .item__preco small {
+    font-family: var(--fonte-titulo);
+    font-size: 14px;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--tinta-suave);
+  }
+
+  .item__info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin-top: 8px;
+  }
+
+  .item__desc {
+    max-width: 46ch;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--tinta-suave);
+  }
+
+  .item__rodape {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex: none;
+  }
+
+  .item__duracao,
+  .item__agendar {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+    white-space: nowrap;
+  }
+
+  .item__agendar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--tinta);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 0.35s,
+      transform 0.35s;
+  }
+
+  .item__agendar :global(svg) {
+    width: 14px;
+    height: 14px;
+  }
+
+  @media (hover: hover) {
+    .item:hover .item__nome {
+      transform: translateX(10px);
+    }
+
+    .item:hover .item__agendar {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .cardapio__nota {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px 24px;
+    margin-top: 56px;
+    font-family: var(--fonte-titulo);
+    font-size: 1.3rem;
+    font-style: italic;
+  }
+
+  .cardapio__nota .link-seta {
+    font-family: var(--fonte-texto);
+    font-style: normal;
+  }
+
+  @media (max-width: 899px) {
+    .cardapio__grade {
+      display: block;
+    }
+
+    .cardapio__fixo {
+      position: static;
+    }
+
+    .cardapio__foto {
+      display: none;
+    }
+
+    .cardapio__lista {
+      margin-top: 56px;
+    }
+
+    .item__info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .item__rodape {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      align-self: stretch;
+    }
+
+    /* No toque não existe hover: o "Agendar" fica sempre visível */
+    .item__agendar {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

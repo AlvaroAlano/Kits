@@ -1,0 +1,90 @@
+---
+// Faixa com os diferenciais da clínica, numerados, logo abaixo do topo.
+const { site } = Astro.props;
+const itens = site.textos.dados?.itens ?? [];
+---
+
+<section class="dados" aria-label="Diferenciais">
+  <ol class="container dados__lista">
+    {
+      itens.map((item, i) => (
+        <li data-revelar style={`--atraso:${i * 90}ms`}>
+          <span class="dados__num">{String(i + 1).padStart(2, '0')}</span>
+          <h2 class="dados__titulo">{item.titulo}</h2>
+          <p>{item.texto}</p>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .dados {
+    padding-block: clamp(96px, 11vw, 150px) clamp(72px, 8vw, 112px);
+  }
+
+  .dados__lista {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0 var(--colunas-gap);
+  }
+
+  .dados__lista li {
+    padding-top: 22px;
+    border-top: 1px solid var(--linha-forte);
+  }
+
+  .dados__num {
+    font-family: var(--fonte-rotulo);
+    font-size: 12px;
+    color: var(--destaque);
+  }
+
+  .dados__titulo {
+    margin-top: 18px;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .dados p {
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--tinta-suave);
+    max-width: 30ch;
+  }
+
+  @media (max-width: 1023px) {
+    .dados__lista {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 36px;
+    }
+  }
+
+  @media (max-width: 599px) {
+    .dados__lista {
+      grid-template-columns: 1fr;
+      row-gap: 0;
+    }
+
+    .dados__lista li {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      padding-block: 20px;
+    }
+
+    .dados__num {
+      grid-row: span 2;
+      padding-top: 3px;
+    }
+
+    .dados__titulo {
+      margin-top: 0;
+    }
+
+    .dados p {
+      margin-top: 6px;
+    }
+  }
+</style>

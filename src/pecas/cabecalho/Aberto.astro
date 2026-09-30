@@ -1,0 +1,150 @@
+---
+// Cabeçalho "aberto": transparente e claro sobre a foto do topo; fica sólido ao rolar.
+// No celular mostra só a marca (o menu fica na barra de baixo, perto do polegar).
+import Marca from '../comum/Marca.astro';
+
+const { site } = Astro.props;
+const { estilo, cliente, links } = site;
+---
+
+<header class="ab" data-ab>
+  <div class="container ab__barra">
+    <a href="#topo" class="ab__marca" aria-label={`${cliente.nome}, voltar ao início`}>
+      <Marca site={site} clara class="ab__marca-clara" />
+      <Marca site={site} class="ab__marca-escura" />
+    </a>
+
+    <nav class="ab__nav" aria-label="Principal">
+      <ul>
+        {estilo.menu.map((item) => <li><a href={`#${item.ancora}`}>{item.rotulo}</a></li>)}
+      </ul>
+    </nav>
+
+    <a class="ab__agendar" href={links.agendar} target="_blank" rel="noopener">Agendar avaliação</a>
+  </div>
+</header>
+
+<script>
+  const cab = document.querySelector('[data-ab]');
+  const topo = document.getElementById('topo');
+  // Fica sólido quando o topo (foto) sai de baixo do cabeçalho
+  const limite = () => (topo ? topo.offsetHeight - 120 : 40);
+  const atualizar = () => cab.classList.toggle('ab--solida', window.scrollY > limite());
+  window.addEventListener('scroll', atualizar, { passive: true });
+  window.addEventListener('resize', atualizar);
+  atualizar();
+</script>
+
+<style>
+  .ab {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    color: var(--sobre-escuro);
+    transition:
+      background-color 0.45s,
+      color 0.45s,
+      box-shadow 0.45s;
+  }
+
+  .ab--solida {
+    background: var(--fundo-vidro);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    color: var(--tinta);
+    box-shadow: 0 1px 0 var(--linha);
+  }
+
+  .ab__barra {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    height: 88px;
+  }
+
+  .ab__marca {
+    --marca-tamanho: 1.5rem;
+    display: grid;
+  }
+
+  .ab__marca > :global(*) {
+    grid-area: 1 / 1;
+    transition: opacity 0.45s;
+  }
+
+  .ab__marca-escura,
+  .ab--solida .ab__marca-clara {
+    opacity: 0;
+  }
+
+  .ab--solida .ab__marca-escura {
+    opacity: 1;
+  }
+
+  .ab__nav {
+    margin-left: auto;
+  }
+
+  .ab__nav ul {
+    display: flex;
+    gap: 32px;
+  }
+
+  .ab__nav a {
+    position: relative;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .ab__nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 1.5px;
+    border-radius: 2px;
+    background: currentColor;
+    transform: scaleX(0);
+    transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .ab__nav a:hover::after {
+    transform: scaleX(1);
+  }
+
+  .ab__agendar {
+    padding: 13px 22px;
+    border-radius: 14px;
+    background: var(--sobre-escuro);
+    color: var(--tinta);
+    font-size: 15px;
+    font-weight: 600;
+    transition: background-color 0.35s, color 0.35s;
+  }
+
+  .ab--solida .ab__agendar {
+    background: var(--tinta);
+    color: var(--fundo);
+  }
+
+  @media (max-width: 1023px) {
+    .ab {
+      position: absolute;
+    }
+
+    .ab__barra {
+      height: 76px;
+    }
+
+    .ab__marca {
+      --marca-tamanho: 1.25rem;
+    }
+
+    .ab__nav,
+    .ab__agendar,
+    .ab__marca-escura {
+      display: none;
+    }
+  }
+</style>
