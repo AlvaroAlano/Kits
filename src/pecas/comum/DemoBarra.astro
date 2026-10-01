@@ -1,5 +1,6 @@
 ---
 // Barra de navegação entre as propostas (só nas demos, nunca no site definitivo).
+// "Favoritar" guarda a escolha no navegador da cliente; a página de propostas mostra as favoritas.
 // Celular: barra inteira embaixo, que se esconde ao rolar para baixo e volta ao subir,
 // no topo e no fim da página. Enquanto aparece, empurra para cima as barras e botões do
 // próprio estilo (variável --demo-altura). Computador: pílula flutuante no centro.
@@ -7,7 +8,7 @@
 import { comBase } from '../../lib/texto.js';
 
 const { site, ordem } = Astro.props;
-const { cliente, estilo, links } = site;
+const { cliente, estilo } = site;
 
 const total = ordem.length;
 const indice = ordem.findIndex((p) => p.id === estilo.id);
@@ -43,20 +44,38 @@ const hub = comBase(`/${cliente.slug}/`);
     )
   }
 
-  {
-    links.gostei && (
-      <a class="db__gostei" href={links.gostei} target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
-          <path d="M12 20.5s-7.5-4.6-9.2-9.4C1.6 7.6 4 4.5 7.3 4.5c2 0 3.6 1.1 4.7 2.7 1.1-1.6 2.7-2.7 4.7-2.7 3.3 0 5.7 3.1 4.5 6.6-1.7 4.8-9.2 9.4-9.2 9.4z" />
-        </svg>
-        Gostei desta
-      </a>
-    )
-  }
+  <button type="button" class="db__fav" aria-pressed="false" data-favoritar data-cliente={cliente.slug} data-estilo={estilo.id}>
+    <svg viewBox="0 0 24 24" width="18" height="18" stroke-width="1.8" aria-hidden="true">
+      <path d="M12 20.5s-7.5-4.6-9.2-9.4C1.6 7.6 4 4.5 7.3 4.5c2 0 3.6 1.1 4.7 2.7 1.1-1.6 2.7-2.7 4.7-2.7 3.3 0 5.7 3.1 4.5 6.6-1.7 4.8-9.2 9.4-9.2 9.4z" />
+    </svg>
+    <span data-fav-texto>Favoritar</span>
+  </button>
 </nav>
 
 <script>
+  import { lerFavoritos, alternarFavorito } from '../../lib/favoritos.js';
+
   const barra = document.querySelector('[data-demo-barra]');
+
+  // Favoritar
+  const fav = barra.querySelector('[data-favoritar]');
+  const favTexto = fav.querySelector('[data-fav-texto]');
+  const { cliente, estilo } = fav.dataset;
+  const pintar = () => {
+    const marcado = lerFavoritos(cliente).includes(estilo);
+    fav.setAttribute('aria-pressed', String(marcado));
+    favTexto.textContent = marcado ? 'Favorita' : 'Favoritar';
+  };
+  fav.addEventListener('click', () => {
+    alternarFavorito(cliente, estilo);
+    pintar();
+    fav.classList.remove('db__fav--pulso');
+    void fav.offsetWidth;
+    fav.classList.add('db__fav--pulso');
+  });
+  pintar();
+  // ao voltar para a página pelo "voltar" do navegador, atualiza o estado
+  window.addEventListener('pageshow', pintar);
   const raiz = document.documentElement;
   const celular = matchMedia('(max-width: 899px)');
   let visivel = true;
@@ -185,7 +204,7 @@ const hub = comBase(`/${cliente.slug}/`);
     color: rgb(243 241 237 / 0.7);
   }
 
-  .db__gostei {
+  .db__fav {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -194,20 +213,39 @@ const hub = comBase(`/${cliente.slug}/`);
     height: 44px;
     margin-left: auto;
     padding: 0 16px;
+    border: 0;
     border-radius: 12px;
     background: #f3f1ed;
-    color: #1c1a18 !important;
+    color: #1c1a18;
+    font: inherit;
     font-weight: 600;
     white-space: nowrap;
+    cursor: pointer;
     transition: background-color 0.25s;
   }
 
-  .db__gostei svg {
-    color: #d9485f;
+  .db__fav svg {
+    fill: none;
+    stroke: #d9485f;
+    transition: fill 0.2s;
   }
 
-  .db__gostei:hover {
+  .db__fav[aria-pressed='true'] svg {
+    fill: #d9485f;
+  }
+
+  .db__fav:hover {
     background: #fff;
+  }
+
+  .db__fav--pulso svg {
+    animation: db-pulso 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  @keyframes db-pulso {
+    40% {
+      transform: scale(1.35);
+    }
   }
 
   @media (min-width: 420px) {
@@ -253,7 +291,7 @@ const hub = comBase(`/${cliente.slug}/`);
       padding-inline: 6px;
     }
 
-    .db__gostei {
+    .db__fav {
       flex: none;
       margin-left: 6px;
       padding: 0 18px;

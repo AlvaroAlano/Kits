@@ -48,20 +48,32 @@ const urlFontes = familias.length
         <p class="hub__texto">
           {propostas.length === 1
             ? 'Preparamos uma proposta de site com a sua marca. Abra e veja como as suas clientes vão ver.'
-            : `Preparamos ${propostas.length} propostas de site com a sua marca. Abra cada uma e veja qual tem mais a sua cara.`}
+            : `Preparamos ${propostas.length} propostas de site com a sua marca. Abra cada uma e toque no ♡ das que você mais gostar.`}
+        </p>
+        <p class="hub__favs" data-resumo hidden>
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <path d="M12 20.5s-7.5-4.6-9.2-9.4C1.6 7.6 4 4.5 7.3 4.5c2 0 3.6 1.1 4.7 2.7 1.1-1.6 2.7-2.7 4.7-2.7 3.3 0 5.7 3.1 4.5 6.6-1.7 4.8-9.2 9.4-9.2 9.4z" />
+          </svg>
+          <span data-resumo-texto></span>
         </p>
       </header>
 
-      <ol class="hub__lista">
+      <ol class="hub__lista" data-cliente={cliente.slug}>
         {
           propostas.map((site, i) => (
             <li>
-              <a
+              <article
                 class="proposta"
-                href={comBase(`/${cliente.slug}/${site.estilo.id}/`)}
+                data-proposta={site.estilo.id}
+                data-nome={site.estilo.nome}
                 style={`--p-fonte:${site.estilo.fontes.titulo};--p-cor:${site.paleta.tinta};--p-sobre:${site.paleta.fundo}`}
               >
                 <span class="proposta__capa">
+                  <button type="button" class="proposta__fav" aria-pressed="false" aria-label={`Favoritar ${site.estilo.nome}`} data-favoritar>
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke-width="1.8" aria-hidden="true">
+                      <path d="M12 20.5s-7.5-4.6-9.2-9.4C1.6 7.6 4 4.5 7.3 4.5c2 0 3.6 1.1 4.7 2.7 1.1-1.6 2.7-2.7 4.7-2.7 3.3 0 5.7 3.1 4.5 6.6-1.7 4.8-9.2 9.4-9.2 9.4z" />
+                    </svg>
+                  </button>
                   <Amostra site={site} />
                   {site.recomendado && (
                     <span class="proposta__selo">
@@ -84,18 +96,60 @@ const urlFontes = familias.length
                     </span>
                   )}
                   <span class="proposta__espaco" />
-                  <span class="proposta__ver">
-                    Ver proposta
+                  <a class="proposta__ver" href={comBase(`/${cliente.slug}/${site.estilo.id}/`)}>
+                    Ver proposta <span class="proposta__nome-oculto">{site.estilo.nome}</span>
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="M4 12h15M13 6l6 6-6 6" />
                     </svg>
-                  </span>
+                  </a>
                 </span>
-              </a>
+              </article>
             </li>
           ))
         }
       </ol>
+
+      <script>
+        import { lerFavoritos, alternarFavorito } from '../../lib/favoritos.js';
+
+        const lista = document.querySelector('[data-cliente]');
+        const cliente = lista.dataset.cliente;
+        const cartoes = [...lista.querySelectorAll('[data-proposta]')];
+        const resumo = document.querySelector('[data-resumo]');
+        const resumoTexto = document.querySelector('[data-resumo-texto]');
+
+        const pintar = () => {
+          const favoritos = lerFavoritos(cliente);
+          const nomes = [];
+          for (const cartao of cartoes) {
+            const marcado = favoritos.includes(cartao.dataset.proposta);
+            cartao.classList.toggle('proposta--favorita', marcado);
+            const botao = cartao.querySelector('[data-favoritar]');
+            botao.setAttribute('aria-pressed', String(marcado));
+            botao.setAttribute('aria-label', `${marcado ? 'Desfavoritar' : 'Favoritar'} ${cartao.dataset.nome}`);
+            if (marcado) nomes.push(cartao.dataset.nome);
+          }
+          resumo.hidden = nomes.length === 0;
+          resumoTexto.textContent =
+            nomes.length === 1 ? `Sua favorita: ${nomes[0]}` : `Suas favoritas: ${nomes.join(', ').replace(/, ([^,]*)$/, ' e $1')}`;
+        };
+
+        for (const cartao of cartoes) {
+          const botao = cartao.querySelector('[data-favoritar]');
+          botao.addEventListener('click', () => {
+            alternarFavorito(cliente, cartao.dataset.proposta);
+            pintar();
+            botao.classList.remove('proposta__fav--pulso');
+            void botao.offsetWidth;
+            botao.classList.add('proposta__fav--pulso');
+          });
+        }
+
+        pintar();
+        // ao voltar de uma proposta pelo "voltar" do navegador, mostra o que ela marcou lá
+        window.addEventListener('pageshow', pintar);
+        window.addEventListener('storage', pintar);
+      </script>
 
       <p class="hub__nota">
         Textos, fotos e preços são de exemplo. Depois da escolha, a gente ajusta tudo com você.
@@ -168,15 +222,37 @@ const urlFontes = familias.length
         display: flex;
       }
 
+      .hub__favs {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 18px 0 0;
+        padding: 9px 16px 9px 13px;
+        border-radius: 999px;
+        background: #fff;
+        font-size: 14.5px;
+        font-weight: 600;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+      }
+
+      .hub__favs[hidden] {
+        display: none;
+      }
+
+      .hub__favs svg {
+        fill: #d9485f;
+      }
+
+      /* o cartão inteiro é clicável pelo link "Ver proposta" (que se estica sobre ele);
+         o coração fica por cima e funciona separado */
       .proposta {
+        position: relative;
         display: flex;
         flex-direction: column;
         width: 100%;
         padding: 10px;
         border-radius: 22px;
         background: #fff;
-        color: inherit;
-        text-decoration: none;
         box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
         transition:
           transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
@@ -184,7 +260,7 @@ const urlFontes = familias.length
         -webkit-tap-highlight-color: transparent;
       }
 
-      .proposta:active {
+      .proposta:has(.proposta__ver:active) {
         transform: scale(0.99);
       }
 
@@ -195,9 +271,73 @@ const urlFontes = familias.length
         }
       }
 
+      .proposta.proposta--favorita {
+        box-shadow: 0 0 0 2px #e8a3ae;
+      }
+
+      @media (hover: hover) {
+        .proposta.proposta--favorita:hover {
+          box-shadow:
+            0 0 0 2px #e8a3ae,
+            0 18px 40px -24px rgb(0 0 0 / 0.35);
+        }
+      }
+
+      .proposta:has(.proposta__ver:focus-visible) {
+        outline: 2px solid #1c1a18;
+        outline-offset: 3px;
+      }
+
       .proposta__capa {
         position: relative;
         display: block;
+      }
+
+      .proposta__fav {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: rgb(255 255 255 / 0.94);
+        box-shadow: 0 6px 16px -8px rgb(0 0 0 / 0.45);
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .proposta__fav svg {
+        fill: none;
+        stroke: #d9485f;
+        transition: fill 0.2s;
+      }
+
+      .proposta__fav[aria-pressed='true'] svg {
+        fill: #d9485f;
+      }
+
+      .proposta__fav--pulso svg {
+        animation: pulso 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+      }
+
+      @keyframes pulso {
+        40% {
+          transform: scale(1.35);
+        }
+      }
+
+      .proposta__nome-oculto {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
       }
 
       .proposta__selo {
@@ -278,6 +418,18 @@ const urlFontes = familias.length
         color: var(--p-sobre);
         font-size: 15.5px;
         font-weight: 600;
+        text-decoration: none;
+      }
+
+      .proposta__ver:focus-visible {
+        outline: none;
+      }
+
+      .proposta__ver::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 22px;
       }
 
       /* o botão fica sempre embaixo; o espaço acima dele cresce quando um cartão tem menos texto */

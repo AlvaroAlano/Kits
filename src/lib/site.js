@@ -1,6 +1,5 @@
 import { gerarPaleta, comAlfa } from './cor.js';
 import { linkWhats } from './texto.js';
-import kit from '../kit.json';
 
 const fichas = import.meta.glob('../clientes/*.json', { eager: true, import: 'default' });
 const arquivosEstilo = import.meta.glob('../estilos/*/estilo.json', { eager: true, import: 'default' });
@@ -79,11 +78,6 @@ export function montarSite(cliente, estiloId) {
   };
 
   const enderecoCompleto = `${endereco.linha1}, ${endereco.bairro}, ${endereco.cidade} - ${endereco.uf}, ${endereco.cep}`;
-
-  // "Gostei desta" (só nas demos): avisa no WhatsApp de quem está apresentando as propostas
-  const propostas = { ...kit.propostas, ...(cliente.propostas ?? {}) };
-  const mensagemGostei = propostas.mensagem.replace('{estilo}', estilo.nome).replace('{cliente}', cliente.nome);
-
   // Itens do menu com "requer" só aparecem se a ficha tiver esse dado (ex.: depoimentos)
   const menu = estilo.menu.filter((item) => {
     if (!item.requer) return true;
@@ -108,7 +102,6 @@ export function montarSite(cliente, estiloId) {
       instagram: contato.instagram ? `https://instagram.com/${contato.instagram}` : null,
       maps: endereco.mapsUrl ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(enderecoCompleto)}`,
       waze: endereco.wazeUrl ?? `https://waze.com/ul?q=${encodeURIComponent(enderecoCompleto)}&navigate=yes`,
-      gostei: propostas.whatsapp ? linkWhats(propostas.whatsapp, mensagemGostei) : null,
       mapaEmbed: endereco.mapaEmbed ?? `https://www.google.com/maps?q=${encodeURIComponent(enderecoCompleto)}&output=embed`,
     },
   };

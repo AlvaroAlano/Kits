@@ -71,14 +71,10 @@ Cada estilo tem textos padrão com `{cidade}`, `{bairro}`, `{profissional}`, `{a
 ### Estilo recomendado
 `"recomendado": "botanico"` — esse estilo vem primeiro na página de propostas, com o selo **Recomendado para você**.
 
-### Navegação entre propostas e "Gostei desta" (só nas demos)
-Com `"demo": true`, cada proposta ganha uma barra embaixo com **Todas as propostas**, **anterior/próxima** (as setas ← → do teclado também funcionam, útil numa call) e **Gostei desta**, que abre o WhatsApp com a mensagem "gostei do estilo X".
+### Navegação entre propostas e favoritos (só nas demos)
+Com `"demo": true`, cada proposta ganha uma barra embaixo com **Todas as propostas**, **anterior/próxima** (as setas ← → do teclado também funcionam, útil numa call) e **♡ Favoritar**.
 
-O número e a mensagem ficam em `src/kit.json` (vale para todas as fichas). Para uma ficha específica mandar para outro número:
-
-```json
-"propostas": { "whatsapp": "5548999999999" }
-```
+Os favoritos ficam guardados **no navegador da cliente** (no aparelho dela). Na página de propostas, as favoritas aparecem com o coração preenchido, contorno no cartão e o resumo "Suas favoritas: …" no topo; dá para marcar e desmarcar ali também. Nada é enviado para ninguém: na call, ela conta ou compartilha a tela. Se ela abrir em outro navegador ou aparelho, os favoritos não vão junto.
 
 No site definitivo (sem `"demo": true`) a barra não aparece.
 
