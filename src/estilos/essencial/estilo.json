@@ -2,6 +2,7 @@
   "id": "essencial",
   "nome": "Essencial",
   "descricao": "Jovem, direto e cheio de cor. Para quem quer transmitir leveza, praticidade e uma conversa sem rodeios.",
+  "amostra": { "fontes": ["Bricolage+Grotesque:wght@800"], "destaques": ["Título com fotos", "Tratamentos em abas", "Fotos em movimento"] },
   "fontes": {
     "url": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400..700&display=swap",
     "titulo": "'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif",

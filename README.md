@@ -1,4 +1,4 @@
-# Kit de sites Convcard
+# Kit de sites
 
 Um projeto só gera os sites de todas as clientes, em vários estilos. Cada cliente é uma **ficha** (arquivo JSON) e cada estilo é uma **combinação de peças** (topo, sobre, serviços, galeria...).
 
@@ -66,7 +66,21 @@ Cada estilo tem textos padrão com `{cidade}`, `{bairro}`, `{profissional}`, `{a
 ```
 
 ### Só alguns estilos para essa cliente
-`"estilos": ["maison"]` — sem isso, a cliente recebe todos os estilos existentes.
+`"estilos": ["maison", "botanico", "acolhedor"]` — sem isso, a cliente recebe todos os estilos existentes. Para vender, 2 ou 3 estilos escolhidos pelo perfil costumam funcionar melhor que os 5.
+
+### Estilo recomendado
+`"recomendado": "botanico"` — esse estilo vem primeiro na página de propostas, com o selo **Recomendado para você**.
+
+### Navegação entre propostas e "Gostei desta" (só nas demos)
+Com `"demo": true`, cada proposta ganha uma barra embaixo com **Todas as propostas**, **anterior/próxima** (as setas ← → do teclado também funcionam, útil numa call) e **Gostei desta**, que abre o WhatsApp com a mensagem "gostei do estilo X".
+
+O número e a mensagem ficam em `src/kit.json` (vale para todas as fichas). Para uma ficha específica mandar para outro número:
+
+```json
+"propostas": { "whatsapp": "5548999999999" }
+```
+
+No site definitivo (sem `"demo": true`) a barra não aparece.
 
 ### Site definitivo
 Quando fechar: tire `"demo": true` (libera o Google) e publique só o estilo escolhido no domínio dela. O `public/robots.txt` deste projeto bloqueia o Google porque aqui ficam as demos.

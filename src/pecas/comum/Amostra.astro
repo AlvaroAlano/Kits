@@ -1,0 +1,420 @@
+---
+// Miniatura desenhada do layout de um estilo (usada na página de propostas, no lugar de fotos).
+// Reproduz a composição do topo de cada estilo com as cores e a fonte dele, só com formas.
+// A variante vem da peça de topo do estilo, então um estilo novo que reusa um topo já ganha miniatura.
+import { fmt } from '../../lib/texto.js';
+
+const { site } = Astro.props;
+const { paleta, estilo, textos } = site;
+
+const VARIANTES = {
+  'hero/editorial': 'editorial',
+  'hero/centralizado': 'centralizado',
+  'hero/sangrado': 'sangrado',
+  'hero/tipografico': 'tipografico',
+  'hero/portal': 'portal',
+};
+const variante = VARIANTES[estilo.secoes[0]] ?? 'simples';
+
+// título curto em uma linha corrida; no Essencial, [1] e [2] viram cápsulas
+const titulo = textos.hero.titulo.replace(/\s*\n\s*/g, ' ').trim();
+const partes = titulo.split(/\[\d\]/).map((p) => fmt(p.trim()));
+
+const cores = [
+  `--a-fundo:${paleta.fundo}`,
+  `--a-alt:${paleta.fundoAlt}`,
+  `--a-tinta:${paleta.tinta}`,
+  `--a-suave:${paleta.tintaSuave}`,
+  `--a-destaque:${paleta.destaque}`,
+  `--a-escuro:${paleta.escuro}`,
+  `--a-sobre:${paleta.sobreEscuro}`,
+  `--a-dest-esc:${paleta.destaqueEscuro}`,
+  `--a-fonte:${estilo.fontes.titulo}`,
+  `--a-mao:${estilo.fontes.assinatura ?? 'cursive'}`,
+].join(';');
+---
+
+<div class:list={['am', `am--${variante}`, `am--estilo-${estilo.id}`]} style={cores} aria-hidden="true">
+  {
+    variante === 'editorial' && (
+      <Fragment>
+        <span class="am__foto am__ed-foto" />
+        <span class="am__ed-painel">
+          <span class="am__traco" />
+          <span class="am__titulo" set:html={partes.join(' ')} />
+          <span class="am__botao" />
+        </span>
+      </Fragment>
+    )
+  }
+
+  {
+    variante === 'centralizado' && (
+      <Fragment>
+        <span class="am__ce-selo" />
+        <span class="am__titulo am__ce-titulo" set:html={partes.join(' ')} />
+        <span class="am__ce-fotos">
+          <span class="am__foto am__ce-p" />
+          <span class="am__foto am__ce-g" />
+          <span class="am__foto am__ce-p" />
+        </span>
+      </Fragment>
+    )
+  }
+
+  {
+    variante === 'sangrado' && (
+      <Fragment>
+        <span class="am__sa-bloco">
+          <span class="am__titulo am__sa-titulo" set:html={partes.join(' ')} />
+        </span>
+        <span class="am__sa-dock">
+          <span />
+          <span />
+        </span>
+      </Fragment>
+    )
+  }
+
+  {
+    variante === 'tipografico' && (
+      <Fragment>
+        <span class="am__titulo am__ti-titulo">
+          {partes.map((p, i) => (
+            <Fragment>
+              {i > 0 && <span class="am__ti-pilula" />}
+              <Fragment set:html={p} />
+            </Fragment>
+          ))}
+        </span>
+        <span class="am__ti-faixa">
+          <span /><span /><span /><span />
+        </span>
+      </Fragment>
+    )
+  }
+
+  {
+    variante === 'portal' && (
+      <Fragment>
+        <span class="am__titulo am__po-titulo" set:html={partes.join(' ')} />
+        <span class="am__po-arco">
+          <span class="am__foto" />
+        </span>
+        <span class="am__po-dir">
+          <span class="am__linha" />
+          <span class="am__linha am__linha--curta" />
+          <span class="am__botao am__po-botao" />
+        </span>
+      </Fragment>
+    )
+  }
+
+  {variante === 'simples' && <span class="am__titulo" set:html={partes.join(' ')} />}
+</div>
+
+<style>
+  .am {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--a-fundo);
+    color: var(--a-tinta);
+    container-type: inline-size;
+  }
+
+  .am > *,
+  .am span {
+    display: block;
+  }
+
+  /* "foto" abstrata: degradê suave nas cores do estilo, com um brilho */
+  .am__foto {
+    background:
+      radial-gradient(circle at 30% 22%, rgb(255 255 255 / 0.5), transparent 46%),
+      linear-gradient(155deg, color-mix(in srgb, var(--a-destaque) 55%, var(--a-alt)), var(--a-alt) 75%);
+  }
+
+  .am__titulo {
+    font-family: var(--a-fonte);
+    font-size: 6.4cqi;
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+  }
+
+  .am__titulo :global(em) {
+    font-style: italic;
+    color: var(--a-destaque);
+  }
+
+  .am__traco {
+    width: 12cqi;
+    height: 1px;
+    background: var(--a-destaque);
+  }
+
+  .am__linha {
+    height: 1.6cqi;
+    border-radius: 2cqi;
+    background: color-mix(in srgb, var(--a-tinta) 18%, transparent);
+  }
+
+  .am__linha--curta {
+    width: 62%;
+  }
+
+  .am__botao {
+    width: 34%;
+    height: 5.4cqi;
+    background: var(--a-tinta);
+  }
+
+  /* Maison: foto retangular com moldura deslocada e painel de texto avançando sobre ela */
+  .am__ed-foto {
+    position: absolute;
+    left: 8%;
+    top: 10%;
+    width: 50%;
+    height: 80%;
+  }
+
+  .am__ed-foto::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--a-destaque);
+    transform: translate(-3cqi, 3cqi);
+  }
+
+  .am__ed-painel {
+    position: absolute;
+    right: 6%;
+    bottom: 16%;
+    width: 50%;
+    display: grid !important;
+    gap: 3cqi;
+    padding: 4.5cqi;
+    background: var(--a-fundo);
+  }
+
+  /* Clínico: selo, título centralizado e três fotos redondas */
+  .am--centralizado {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 9%;
+    text-align: center;
+  }
+
+  .am__ce-selo {
+    width: 26cqi;
+    height: 4.6cqi;
+    border: 1px solid color-mix(in srgb, var(--a-tinta) 25%, transparent);
+    border-radius: 999px;
+  }
+
+  .am__ce-titulo {
+    max-width: 70%;
+    margin-top: 4cqi;
+    font-size: 7.4cqi;
+  }
+
+  .am__ce-titulo :global(em) {
+    font-style: italic;
+  }
+
+  .am__ce-fotos {
+    position: absolute;
+    left: 50%;
+    bottom: -14cqi;
+    display: flex !important;
+    align-items: flex-end;
+    transform: translateX(-50%);
+  }
+
+  .am__ce-fotos > span {
+    border-radius: 50%;
+  }
+
+  .am__ce-g {
+    position: relative;
+    z-index: 1;
+    width: 36cqi;
+    aspect-ratio: 1;
+    outline: 1px solid color-mix(in srgb, var(--a-tinta) 28%, transparent);
+    outline-offset: 2.4cqi;
+  }
+
+  .am__ce-p {
+    position: relative;
+    z-index: 2;
+    width: 15cqi;
+    aspect-ratio: 1;
+    margin-bottom: 14cqi;
+    box-shadow: 0 0 0 1.2cqi var(--a-fundo);
+  }
+
+  .am__ce-p:first-child {
+    margin-right: -4cqi;
+  }
+
+  .am__ce-p:last-child {
+    margin-left: -4cqi;
+    margin-bottom: 20cqi;
+  }
+
+  /* Botânico: foto de ponta a ponta com a base curva e a barra de navegação embaixo */
+  .am__sa-bloco {
+    position: absolute;
+    inset: 0 0 18%;
+    display: flex !important;
+    align-items: flex-end;
+    padding: 0 7% 9%;
+    border-radius: 0 0 50% 50% / 0 0 9cqi 9cqi;
+    background:
+      radial-gradient(circle at 75% 25%, color-mix(in srgb, var(--a-dest-esc) 60%, transparent), transparent 55%),
+      linear-gradient(170deg, color-mix(in srgb, var(--a-escuro) 70%, var(--a-dest-esc)), var(--a-escuro) 80%);
+  }
+
+  .am__sa-titulo {
+    max-width: 70%;
+    font-size: 7.6cqi;
+    color: var(--a-sobre);
+  }
+
+  .am__sa-titulo :global(em) {
+    color: var(--a-dest-esc);
+  }
+
+  .am__sa-dock {
+    position: absolute;
+    left: 7%;
+    right: 7%;
+    bottom: 4%;
+    display: grid !important;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 2.4cqi;
+  }
+
+  .am__sa-dock span {
+    height: 8cqi;
+    border-radius: 2.4cqi;
+    background: var(--a-alt);
+  }
+
+  .am__sa-dock span:last-child {
+    background: var(--a-tinta);
+  }
+
+  /* Essencial: título gigante com cápsulas de foto entre as palavras e faixa inclinada */
+  .am__ti-titulo {
+    position: absolute;
+    left: 7%;
+    right: 7%;
+    top: 14%;
+    font-size: 12.5cqi;
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+  }
+
+  .am__ti-titulo :global(em) {
+    font-style: normal;
+  }
+
+  .am__ti-pilula {
+    display: inline-block !important;
+    width: 1.5em;
+    height: 0.72em;
+    margin-inline: 0.06em;
+    border-radius: 999px;
+    vertical-align: 0.02em;
+    background:
+      radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.45), transparent 50%),
+      linear-gradient(120deg, var(--a-destaque), var(--a-escuro));
+  }
+
+  .am__ti-faixa {
+    position: absolute;
+    left: -4%;
+    right: -4%;
+    bottom: 16%;
+    display: flex !important;
+    gap: 4cqi;
+    padding: 3cqi 8cqi;
+    background: var(--a-escuro);
+    transform: rotate(-3deg);
+  }
+
+  .am__ti-faixa span {
+    flex: 1;
+    height: 2.4cqi;
+    border-radius: 2cqi;
+    background: color-mix(in srgb, var(--a-sobre) 80%, transparent);
+  }
+
+  /* Acolhedor: arco no centro, título de um lado e texto do outro */
+  /* termina antes do arco (que começa em 35%) */
+  .am__po-titulo {
+    position: absolute;
+    left: 3%;
+    right: 68%;
+    bottom: 18%;
+    font-size: 4.6cqi;
+    text-align: right;
+  }
+
+  .am__po-titulo :global(em) {
+    font-family: var(--a-mao);
+    font-style: normal;
+    font-size: 1.25em;
+  }
+
+  .am__po-arco {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 30%;
+    height: 80%;
+    transform: translateX(-50%);
+  }
+
+  .am__po-arco::before {
+    content: '';
+    position: absolute;
+    inset: -2.2cqi -2.2cqi 0;
+    border: 1px solid color-mix(in srgb, var(--a-tinta) 28%, transparent);
+    border-bottom: 0;
+    border-radius: 999px 999px 0 0;
+  }
+
+  .am__po-arco .am__foto {
+    width: 100%;
+    height: 100%;
+    border-radius: 999px 999px 0 0;
+  }
+
+  .am__po-dir {
+    position: absolute;
+    right: 5%;
+    width: 26%;
+    bottom: 22%;
+    display: grid !important;
+    gap: 2.2cqi;
+  }
+
+  .am__po-botao {
+    width: 80%;
+    margin-top: 2cqi;
+    background: var(--a-escuro);
+    border-radius: 999px 999px 0.8cqi 0.8cqi;
+  }
+
+  .am--simples {
+    display: flex !important;
+    align-items: center;
+    padding: 8%;
+  }
+</style>

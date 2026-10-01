@@ -1,7 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
+import DemoBarra from '../../pecas/comum/DemoBarra.astro';
 import { pecas } from '../../pecas/index.js';
-import { clientes, estilosDoCliente, montarSite } from '../../lib/site.js';
+import { clientes, estilos, estilosDoCliente, montarSite, ordemPropostas } from '../../lib/site.js';
 
 export function getStaticPaths() {
   return clientes.flatMap((cliente) =>
@@ -14,6 +15,7 @@ export function getStaticPaths() {
 
 const { cliente, estilo } = Astro.props;
 const site = montarSite(cliente, estilo);
+const ordem = ordemPropostas(cliente).map((id) => ({ id, nome: estilos[id].nome }));
 
 const peca = (nome) => {
   if (!pecas[nome]) throw new Error(`Peça "${nome}" não existe (usada no estilo "${estilo}").`);
@@ -32,4 +34,5 @@ const secoes = (cliente.secoes ?? site.estilo.secoes).map(peca);
   </main>
   <Rodape site={site} />
   <Flutuante site={site} />
+  {site.demo && <DemoBarra site={site} ordem={ordem} />}
 </Base>

@@ -2,6 +2,7 @@
   "id": "botanico",
   "nome": "Botânico",
   "descricao": "Natural e acolhedor, com formas orgânicas. Para quem quer transmitir leveza, cuidado e proximidade.",
+  "amostra": { "fontes": ["Fraunces:ital,wght@0,400;1,400"], "destaques": ["Formas orgânicas", "Tratamentos em cards", "Aviso de aberto agora"] },
   "fontes": {
     "url": "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,0..100;1,9..144,300..600,0..100&family=Figtree:wght@400..600&display=swap",
     "titulo": "'Fraunces', Georgia, serif",

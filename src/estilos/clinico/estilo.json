@@ -2,6 +2,7 @@
   "id": "clinico",
   "nome": "Clínico",
   "descricao": "Moderno, claro e técnico. Para quem quer transmitir segurança, método e tecnologia.",
+  "amostra": { "fontes": ["Instrument+Serif:ital@0;1"], "destaques": ["Fotos em círculo", "Tratamentos que abrem ao tocar", "Dúvidas frequentes"] },
   "fontes": {
     "url": "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300..600&family=IBM+Plex+Mono:wght@400;500&display=swap",
     "titulo": "'Instrument Serif', Georgia, serif",

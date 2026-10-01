@@ -50,7 +50,8 @@ const t = site.textos.flutuante;
   .bf {
     position: fixed;
     right: 14px;
-    bottom: calc(14px + env(safe-area-inset-bottom));
+    /* nas demos sobe para dar lugar à barra de propostas */
+    bottom: calc(14px + var(--demo-altura, 0px) + var(--seguro, env(safe-area-inset-bottom)));
     z-index: 40;
     display: inline-flex;
     align-items: center;
@@ -69,6 +70,7 @@ const t = site.textos.flutuante;
     transition:
       opacity 0.4s,
       transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      bottom 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
       background-color 0.35s,
       color 0.35s;
   }

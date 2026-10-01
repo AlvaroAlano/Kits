@@ -1,34 +1,54 @@
 ---
 // Página que vai para a cliente na call: um link só, com todos os estilos preparados para ela.
-import { clientes, estilosDoCliente, montarSite } from '../../lib/site.js';
-import { comBase } from '../../lib/texto.js';
+// Cada proposta mostra uma miniatura desenhada do layout (cores e fonte do estilo), sem fotos.
+import Amostra from '../../pecas/comum/Amostra.astro';
+import { clientes, montarSite, ordemPropostas } from '../../lib/site.js';
+import { comBase, semMarcas } from '../../lib/texto.js';
 
 export function getStaticPaths() {
   return clientes.map((cliente) => ({ params: { cliente: cliente.slug }, props: { cliente } }));
 }
 
 const { cliente } = Astro.props;
-const propostas = estilosDoCliente(cliente).map((id) => montarSite(cliente, id));
-const miniatura = (src) => (src.includes('images.unsplash.com') ? `${src}?auto=format&fit=crop&q=70&w=720&h=900` : comBase(src));
+const propostas = ordemPropostas(cliente).map((id) => montarSite(cliente, id));
+const primeiroNome = cliente.profissional.nome.split(' ')[0];
+
+// Uma requisição só ao Google Fonts, com apenas as letras usadas nas miniaturas (bem leve no celular)
+const familias = [...new Set(propostas.flatMap((s) => s.estilo.amostra?.fontes ?? []))];
+const letras = [
+  ...new Set(
+    propostas
+      .flatMap((s) => [s.estilo.nome, semMarcas(s.textos.hero.titulo).replace(/\[\d\]/g, '')])
+      .join('')
+      .replace(/\s/g, ''),
+  ),
+].join('');
+const urlFontes = familias.length
+  ? `https://fonts.googleapis.com/css2?${familias.map((f) => `family=${f}`).join('&')}&text=${encodeURIComponent(letras)}&display=swap`
+  : null;
 ---
 
 <!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#f3f1ed" />
     <title>Propostas de site · {cliente.nome}</title>
+    {urlFontes && <link rel="preconnect" href="https://fonts.googleapis.com" />}
+    {urlFontes && <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />}
+    {urlFontes && <link rel="stylesheet" href={urlFontes} />}
   </head>
   <body>
     <main class="hub">
       <header class="hub__topo">
-        <p class="hub__de">Convcard · propostas de site</p>
-        <h1>Olá, {cliente.profissional.nome.split(' ')[0]}.</h1>
+        <p class="hub__rotulo">Propostas de site · {cliente.nome}</p>
+        <h1>Olá, {primeiroNome}.</h1>
         <p class="hub__texto">
           {propostas.length === 1
-            ? 'Preparamos uma proposta de site com a sua marca. Abra no celular para ver como suas clientes vão ver.'
-            : `Preparamos ${propostas.length} propostas de site com a sua marca. Abra cada uma no celular e veja qual tem mais a sua cara.`}
+            ? 'Preparamos uma proposta de site com a sua marca. Abra e veja como as suas clientes vão ver.'
+            : `Preparamos ${propostas.length} propostas de site com a sua marca. Abra cada uma e veja qual tem mais a sua cara.`}
         </p>
       </header>
 
@@ -36,129 +56,243 @@ const miniatura = (src) => (src.includes('images.unsplash.com') ? `${src}?auto=f
         {
           propostas.map((site, i) => (
             <li>
-              <a class="proposta" href={comBase(`/${cliente.slug}/${site.estilo.id}/`)}>
-                <img src={miniatura(site.fotos.hero.src)} alt="" loading="lazy" />
-                <span class="proposta__cores" aria-hidden="true">
-                  {['fundo', 'fundoAlt', 'destaque', 'escuro'].map((c) => (
-                    <i style={`background:${site.paleta[c]}`} />
-                  ))}
+              <a
+                class="proposta"
+                href={comBase(`/${cliente.slug}/${site.estilo.id}/`)}
+                style={`--p-fonte:${site.estilo.fontes.titulo};--p-cor:${site.paleta.tinta};--p-sobre:${site.paleta.fundo}`}
+              >
+                <span class="proposta__capa">
+                  <Amostra site={site} />
+                  {site.recomendado && (
+                    <span class="proposta__selo">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                        <path d="M12 2.8l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.6l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z" />
+                      </svg>
+                      Recomendado para você
+                    </span>
+                  )}
                 </span>
-                <span class="proposta__num">Proposta {String(i + 1).padStart(2, '0')}</span>
-                <span class="proposta__nome">{site.estilo.nome}</span>
-                <span class="proposta__desc">{site.estilo.descricao}</span>
-                <span class="proposta__ver">Ver proposta →</span>
+                <span class="proposta__corpo">
+                  <span class="proposta__num">Proposta {String(i + 1).padStart(2, '0')}</span>
+                  <span class="proposta__nome">{site.estilo.nome}</span>
+                  <span class="proposta__desc">{site.estilo.descricao}</span>
+                  {site.estilo.amostra?.destaques && (
+                    <span class="proposta__tags">
+                      {site.estilo.amostra.destaques.map((d) => (
+                        <span>{d}</span>
+                      ))}
+                    </span>
+                  )}
+                  <span class="proposta__espaco" />
+                  <span class="proposta__ver">
+                    Ver proposta
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M4 12h15M13 6l6 6-6 6" />
+                    </svg>
+                  </span>
+                </span>
               </a>
             </li>
           ))
         }
       </ol>
+
+      <p class="hub__nota">
+        Textos, fotos e preços são de exemplo. Depois da escolha, a gente ajusta tudo com você.
+      </p>
     </main>
 
     <style is:global>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
-        background: #f4f2ee;
+        background: #f3f1ed;
         color: #1c1a18;
         font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
         -webkit-font-smoothing: antialiased;
+        -webkit-text-size-adjust: 100%;
       }
     </style>
 
     <style>
       .hub {
-        max-width: 1200px;
+        max-width: 1180px;
         margin: 0 auto;
-        padding: clamp(40px, 8vw, 96px) 20px 80px;
+        padding: clamp(36px, 7vw, 88px) 16px calc(48px + env(safe-area-inset-bottom));
       }
 
-      .hub__de {
+      .hub__topo {
+        padding-inline: 4px;
+      }
+
+      .hub__rotulo {
         margin: 0;
         font-size: 12px;
         font-weight: 600;
-        letter-spacing: 0.2em;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
-        color: #6f6a64;
+        color: #7a746d;
       }
 
       h1 {
-        margin: 16px 0 0;
-        font-size: clamp(2.2rem, 5vw, 3.5rem);
-        font-weight: 500;
-        letter-spacing: -0.02em;
+        margin: 14px 0 0;
+        font-size: clamp(2.1rem, 7vw, 3.4rem);
+        font-weight: 600;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
       }
 
       .hub__texto {
-        max-width: 52ch;
-        margin: 14px 0 0;
-        font-size: 17px;
-        line-height: 1.6;
-        color: #4f4a45;
+        max-width: 46ch;
+        margin: 12px 0 0;
+        font-size: clamp(16px, 2.2vw, 18px);
+        line-height: 1.55;
+        color: #514b45;
       }
 
       .hub__lista {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 20px;
-        margin: 48px 0 0;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+        gap: clamp(14px, 2vw, 24px);
+        margin: clamp(28px, 5vw, 56px) 0 0;
         padding: 0;
         list-style: none;
       }
 
+      .hub__lista li {
+        display: flex;
+      }
+
       .proposta {
-        display: grid;
-        gap: 8px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding: 10px;
+        border-radius: 22px;
+        background: #fff;
         color: inherit;
         text-decoration: none;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+        transition:
+          transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+          box-shadow 0.35s;
+        -webkit-tap-highlight-color: transparent;
       }
 
-      .proposta img {
-        width: 100%;
-        aspect-ratio: 4 / 5;
-        object-fit: cover;
-        transition: opacity 0.3s;
+      .proposta:active {
+        transform: scale(0.99);
       }
 
-      .proposta:hover img {
-        opacity: 0.88;
+      @media (hover: hover) {
+        .proposta:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 18px 40px -24px rgb(0 0 0 / 0.35);
+        }
       }
 
-      .proposta__cores {
+      .proposta__capa {
+        position: relative;
+        display: block;
+      }
+
+      .proposta__selo {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 12px 7px 10px;
+        border-radius: 999px;
+        background: #1c1a18;
+        color: #fff;
+        font-size: 12.5px;
+        font-weight: 600;
+        box-shadow: 0 6px 16px -8px rgb(0 0 0 / 0.5);
+      }
+
+      .proposta__selo svg {
+        color: #f2c35b;
+      }
+
+      .proposta__corpo {
         display: flex;
-        margin-top: 6px;
-      }
-
-      .proposta__cores i {
-        width: 22px;
-        height: 22px;
-        border: 1px solid rgb(0 0 0 / 0.08);
-        margin-right: -1px;
+        flex-direction: column;
+        flex: 1;
+        padding: 18px 10px 8px;
       }
 
       .proposta__num {
-        margin-top: 6px;
-        font-size: 11px;
+        font-size: 11.5px;
         font-weight: 600;
-        letter-spacing: 0.2em;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
-        color: #6f6a64;
+        color: #8a837b;
       }
 
       .proposta__nome {
-        font-size: 1.6rem;
-        font-weight: 500;
+        margin-top: 6px;
+        font-family: var(--p-fonte);
+        font-size: 2rem;
+        font-weight: 400;
+        line-height: 1.05;
         letter-spacing: -0.01em;
       }
 
       .proposta__desc {
+        margin-top: 10px;
         font-size: 15px;
         line-height: 1.55;
-        color: #4f4a45;
+        color: #5a544d;
+      }
+
+      .proposta__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 14px;
+      }
+
+      .proposta__tags span {
+        padding: 6px 11px;
+        border-radius: 999px;
+        background: #f3f1ed;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: #4a453f;
       }
 
       .proposta__ver {
-        margin-top: 4px;
-        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 50px;
+        padding: 0 18px;
+        border-radius: 14px;
+        background: var(--p-cor);
+        color: var(--p-sobre);
+        font-size: 15.5px;
         font-weight: 600;
+      }
+
+      /* o botão fica sempre embaixo; o espaço acima dele cresce quando um cartão tem menos texto */
+      .proposta__espaco {
+        flex: 1;
+        min-height: 20px;
+      }
+
+      .hub__nota {
+        max-width: 52ch;
+        margin: 28px auto 0;
+        font-size: 13.5px;
+        line-height: 1.5;
+        text-align: center;
+        color: #8a837b;
       }
     </style>
   </body>

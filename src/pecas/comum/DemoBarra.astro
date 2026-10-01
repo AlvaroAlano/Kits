@@ -1,0 +1,263 @@
+---
+// Barra de navegação entre as propostas (só nas demos, nunca no site definitivo).
+// Celular: barra inteira embaixo, que se esconde ao rolar para baixo e volta ao subir,
+// no topo e no fim da página. Enquanto aparece, empurra para cima as barras e botões do
+// próprio estilo (variável --demo-altura). Computador: pílula flutuante no centro.
+// Setas do teclado ← → também trocam de proposta (útil numa call com tela compartilhada).
+import { comBase } from '../../lib/texto.js';
+
+const { site, ordem } = Astro.props;
+const { cliente, estilo, links } = site;
+
+const total = ordem.length;
+const indice = ordem.findIndex((p) => p.id === estilo.id);
+const anterior = ordem[(indice - 1 + total) % total];
+const proxima = ordem[(indice + 1) % total];
+const url = (id) => comBase(`/${cliente.slug}/${id}/`);
+const hub = comBase(`/${cliente.slug}/`);
+---
+
+<nav class="db" aria-label="Navegação entre as propostas" data-demo-barra data-anterior={url(anterior.id)} data-proxima={url(proxima.id)}>
+  <a class="db__todas" href={hub}>
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" /><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
+      <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" /><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
+    </svg>
+    <span class="db__rotulo-longo">Todas as propostas</span>
+  </a>
+
+  {
+    total > 1 && (
+      <div class="db__nav">
+        <a class="db__seta" href={url(anterior.id)} aria-label={`Proposta anterior: ${anterior.nome}`}>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+        </a>
+        <span class="db__info">
+          <strong>{indice + 1}/{total}</strong>
+          <span class="db__nome">{estilo.nome}</span>
+        </span>
+        <a class="db__seta" href={url(proxima.id)} aria-label={`Próxima proposta: ${proxima.nome}`}>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+        </a>
+      </div>
+    )
+  }
+
+  {
+    links.gostei && (
+      <a class="db__gostei" href={links.gostei} target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+          <path d="M12 20.5s-7.5-4.6-9.2-9.4C1.6 7.6 4 4.5 7.3 4.5c2 0 3.6 1.1 4.7 2.7 1.1-1.6 2.7-2.7 4.7-2.7 3.3 0 5.7 3.1 4.5 6.6-1.7 4.8-9.2 9.4-9.2 9.4z" />
+        </svg>
+        Gostei desta
+      </a>
+    )
+  }
+</nav>
+
+<script>
+  const barra = document.querySelector('[data-demo-barra]');
+  const raiz = document.documentElement;
+  const celular = matchMedia('(max-width: 899px)');
+  let visivel = true;
+  let ultimoY = window.scrollY;
+
+  const aplicar = () => {
+    barra.classList.toggle('db--oculta', !visivel);
+    // só no celular a barra divide espaço com as barras do estilo
+    const empurra = visivel && celular.matches;
+    raiz.style.setProperty('--demo-altura', empurra ? `${barra.offsetHeight}px` : '0px');
+    raiz.style.setProperty('--seguro', empurra ? '0px' : 'env(safe-area-inset-bottom)');
+  };
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      const y = window.scrollY;
+      const noFim = y + window.innerHeight > document.documentElement.scrollHeight - 160;
+      let proximo = visivel;
+      if (y < 120 || noFim || y < ultimoY - 8) proximo = true;
+      else if (y > ultimoY + 8) proximo = false;
+      ultimoY = y;
+      if (proximo !== visivel) {
+        visivel = proximo;
+        aplicar();
+      }
+    },
+    { passive: true },
+  );
+  celular.addEventListener('change', aplicar);
+  aplicar();
+
+  // ← → trocam de proposta (menos quando se está digitando em algum campo)
+  window.addEventListener('keydown', (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey || /input|textarea|select/i.test(document.activeElement?.tagName ?? '')) return;
+    if (e.key === 'ArrowLeft') location.href = barra.dataset.anterior;
+    if (e.key === 'ArrowRight') location.href = barra.dataset.proxima;
+  });
+</script>
+
+<style is:global>
+  /* espaço no fim do rodapé para a barra não cobrir o conteúdo */
+  html[data-demo] body > footer::after {
+    content: '';
+    display: block;
+    height: calc(76px + env(safe-area-inset-bottom));
+  }
+</style>
+
+<style>
+  .db {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 55;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    /* linha clara separa da barra escura que alguns estilos têm logo acima */
+    border-top: 1px solid rgb(255 255 255 / 0.1);
+    background: #1c1a18;
+    color: #f3f1ed;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    box-shadow: 0 -10px 30px -16px rgb(0 0 0 / 0.5);
+    transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .db--oculta {
+    transform: translateY(110%);
+  }
+
+  .db a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .db__todas,
+  .db__seta {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    transition: background-color 0.25s;
+  }
+
+  .db__todas {
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  .db__todas:hover,
+  .db__seta:hover {
+    background: rgb(255 255 255 / 0.14);
+  }
+
+  .db__rotulo-longo,
+  .db__nome {
+    display: none;
+  }
+
+  .db__nav {
+    display: flex;
+    align-items: center;
+    flex: none;
+  }
+
+  .db__info {
+    display: flex;
+    gap: 8px;
+    min-width: 34px;
+    justify-content: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .db__info strong {
+    font-weight: 600;
+  }
+
+  .db__nome {
+    color: rgb(243 241 237 / 0.7);
+  }
+
+  .db__gostei {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex: 1;
+    height: 44px;
+    margin-left: auto;
+    padding: 0 16px;
+    border-radius: 12px;
+    background: #f3f1ed;
+    color: #1c1a18 !important;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color 0.25s;
+  }
+
+  .db__gostei svg {
+    color: #d9485f;
+  }
+
+  .db__gostei:hover {
+    background: #fff;
+  }
+
+  @media (min-width: 420px) {
+    .db__nome {
+      display: inline;
+    }
+  }
+
+  /* Computador: pílula flutuante no centro */
+  @media (min-width: 900px) {
+    .db {
+      left: 50%;
+      right: auto;
+      bottom: 18px;
+      padding: 6px;
+      border: 0;
+      border-radius: 999px;
+      transform: translateX(-50%);
+      box-shadow: 0 18px 40px -16px rgb(0 0 0 / 0.55);
+    }
+
+    .db--oculta {
+      transform: translate(-50%, calc(100% + 30px));
+    }
+
+    .db__todas {
+      display: flex;
+      gap: 8px;
+      width: auto;
+      padding: 0 16px 0 14px;
+      border-radius: 999px;
+    }
+
+    .db__rotulo-longo {
+      display: inline;
+    }
+
+    .db__seta {
+      border-radius: 999px;
+    }
+
+    .db__info {
+      padding-inline: 6px;
+    }
+
+    .db__gostei {
+      flex: none;
+      margin-left: 6px;
+      padding: 0 18px;
+      border-radius: 999px;
+    }
+  }
+</style>
